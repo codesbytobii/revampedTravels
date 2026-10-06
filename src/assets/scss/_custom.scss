@@ -1,0 +1,86 @@
+// scss-docs-start theme-color-variables Customize your color option here
+:root,
+[data-bs-theme=light] {
+  /* ---------- Primary (brand red #fe0002) ---------- */
+  --bs-primary: #fe0002;
+  --bs-primary-hover: #e00002;
+  --bs-primary-active: #bf0002;
+  --bs-primary-bg-subtle: #ffe5e6;      /* was #e0eeff (blue) — now red tint */
+  --bs-primary-bg-dark: #bf0002;
+  --bs-primary-border-subtle: #ffc0c1;
+  --bs-primary-text-emphasis: #6b0005;
+
+  /* ---------- Secondary (neutral, warmed slightly to sit next to red) ---------- */
+  --bs-secondary: #c9cdd4;              /* was #c3d2de (blue-ish) */
+  --bs-secondary-hover: #b6bbc4;
+  --bs-secondary-active: #a1a7b1;
+  --bs-secondary-bg-subtle: #eef0f3;    /* was #dae5ee (blue-ish) */
+  --bs-secondary-bg-dark: #a1a7b1;
+
+  /* ---------- Success ---------- */
+  --bs-success: #009688;
+  --bs-success-hover: #008578;
+  --bs-success-bg-subtle: #d5f9f5;
+  --bs-success-bg-dark: #0ca799;
+
+  /* ---------- Info (kept blue — it's meant to be info/blue) ---------- */
+  --bs-info: #106BDA;
+  --bs-info-hover: #0e5fc4;
+  --bs-info-bg-subtle: #cfe1f8;
+  --bs-info-bg-dark: #0b63d0;
+
+  /* ---------- Warning ---------- */
+  --bs-warning: #ffc107;
+  --bs-warning-hover: #e6ad06;
+  --bs-warning-bg-subtle: #fff3cd;
+  --bs-warning-bg-dark: #f0b503;
+
+  /* ---------- Danger ---------- */
+  --bs-danger: #e43f0b;
+  --bs-danger-hover: #cd3909;
+  --bs-danger-bg-subtle: #ffefe9;
+  --bs-danger-bg-dark: #f1511f;
+
+  /* ---------- Neutrals & extras ---------- */
+  --bs-light: #f6f7f9;
+  --bs-dark: #2a1a1c;                   /* was #591919 → warmed dark, not brick-red */
+  --bs-dark-bg-subtle: #3a2426;         /* was #1b344a (navy) → warm dark tint */
+
+  --bs-cyan: #04765f;
+  --bs-cyan-bg-subtle: #cdf1e9;
+  --bs-cyan-bg-dark: #036f59;
+
+  --bs-purple: #6363f5;
+  --bs-purple-bg-subtle: #dedeff;
+  --bs-purple-bg-dark: #5b5bed;
+
+  /* ---------- RGB triplets (match hex above) ---------- */
+  --bs-primary-rgb: 254, 0, 2;
+  --bs-secondary-rgb: 201, 205, 212;
+  --bs-success-rgb: 0, 150, 136;
+  --bs-info-rgb: 16, 107, 218;
+  --bs-warning-rgb: 255, 193, 7;
+  --bs-danger-rgb: 228, 63, 11;
+  --bs-cyan-rgb: 4, 118, 95;
+  --bs-purple-rgb: 99, 99, 245;
+  --bs-light-rgb: 246, 247, 249;
+  --bs-dark-rgb: 42, 26, 28;
+
+  /* ---------- Semantic UI tokens ---------- */
+  --bs-bordercolor: #e3dfe0;            /* was #dfe0e4 → warmed border */
+  --bs-navcolor: #2a1a1c;               /* was #191e3b (navy) */
+  --bs-placeholder: #9b8f90;            /* was #191e3b (way too dark) */
+  --body-font-family: 'Jost', sans-serif;
+  --heading-font-family: 'Jost', sans-serif;
+  --bs-body-color: #2d3033;
+  --paragraphColor: #5d6f7d;
+  --headingColor: #2a1a1c;              /* was #191e3b (navy) */
+  --fontSize: 15px;
+  --bs-iconcolor: #c4b8b9;              /* was #bacad9 (blue-grey) */
+  --bs-text-muted: #6b5f60;             /* was #455873 (navy-grey) */
+  --bs-footer-bg: #1a1112;              /* was #0e243a (navy) */
+  --bs-footer-text: #b8a9aa;            /* was #5d6f7d */
+}
+
+// Import Font Family
+@import url('https://fonts.googleapis.com/css2?family=Jost:wght@200;300;400;500;600;700;800&display=swap');
