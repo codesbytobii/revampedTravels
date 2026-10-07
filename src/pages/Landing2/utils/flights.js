@@ -1,6 +1,21 @@
 // src/utils/flights.js
-const OFFER_API  = 'https://travels.ffsdgroup.com/api/flight/search/offer';
-const PRICE_API  = 'https://travels.ffsdgroup.com/api/flight/price/confirm';
+const OFFER_API = 'https://travels.ffsdgroup.com/api/flight/search/offer';
+const PRICE_API = 'https://travels.ffsdgroup.com/api/flight/price/confirm';
+
+const CONFIRM_TOKEN_KEY = 'confirmPriceToken';
+const PAY_TOKEN_KEY     = 'payToken';
+
+/* ---------- Tokens ---------- */
+export const saveConfirmToken = (token) => {
+	if (token) localStorage.setItem(CONFIRM_TOKEN_KEY, token);
+};
+export const getConfirmToken = () => localStorage.getItem(CONFIRM_TOKEN_KEY);
+export const clearConfirmToken = () => localStorage.removeItem(CONFIRM_TOKEN_KEY);
+
+export const savePayToken = (token) => {
+	if (token) localStorage.setItem(PAY_TOKEN_KEY, token);
+};
+export const getPayToken = () => localStorage.getItem(PAY_TOKEN_KEY);
 
 /* ---------- Cabin map ---------- */
 export const CABIN_MAP = {
@@ -41,7 +56,11 @@ export const buildOfferParams = ({ origin, destination, date, returnDate, travel
 export const fetchOffers = async (params, signal) => {
 	const res = await fetch(`${OFFER_API}?${params.toString()}`, { signal });
 	if (!res.ok) throw new Error(`Request failed: ${res.status}`);
-	return res.json();
+	const data = await res.json();
+
+	if (data?.accessToken) saveConfirmToken(data.accessToken);
+
+	return data;
 };
 
 /* =========================================================
@@ -95,65 +114,56 @@ export const fetchMultiCityOffers = async (body, signal) => {
 		signal,
 	});
 	if (!res.ok) throw new Error(`Request failed: ${res.status}`);
-	return res.json();
+	const data = await res.json();
+
+	if (data?.accessToken) saveConfirmToken(data.accessToken);
+
+	return data;
 };
 
 /* =========================================================
-   PRICE CONFIRM -> POST
-   Returns the confirmed offer object from the API.
+   PRICE CONFIRM
    ========================================================= */
-export const confirmPrice = async (rawOffer, extraBag = true, signal) => {
+export const confirmPrice = async (rawOffer) => {
+	const token = getConfirmToken();
+	if (!token) {
+		throw new Error('Missing authorization token. Please search again.');
+	}
+
+	const payload = {
+		data: {
+			type: 'flight-offers-pricing',
+			flightOffers: [rawOffer],
+		},
+	};
+
 	const res = await fetch(PRICE_API, {
 		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({
-			data: {
-				type: 'flight-offers-pricing',
-				extra_bag: extraBag,
-				flightOffers: [rawOffer],
-			},
-		}),
-		signal,
+		headers: {
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${token}`,
+		},
+		body: JSON.stringify(payload),
 	});
+
+	const text = await res.text();
+	let data;
+	try { data = JSON.parse(text); } catch { data = null; }
+
 	if (!res.ok) {
-		const body = await res.text();
-		console.error('Price confirm failed:', res.status, body);
-		throw new Error(`Price confirm failed: ${res.status}`);
+		console.error('Price confirm failed:', res.status, text);
+		const msg = data?.message || `Price confirmation failed (${res.status})`;
+		throw new Error(msg);
 	}
-	return res.json();
+
+	return data;
 };
 
-/**
- * Normalize the price-confirm response into the same shape the UI already
- * uses for `offer` (id, price, currency, seatsLeft, itineraries, raw).
- *
- * Also returns extras like ffsd_total and additionalServices.
- */
-export const normalizeConfirmedOffer = (payload, fallbackOffer) => {
-	const offer = payload?.data?.flightOffers?.[0] || payload?.data?.flightOffers?.[0] || null;
-	if (!offer) throw new Error('No confirmed offer in response');
-
-	// Reuse normalizeOffers on a single-item payload
-	const [normalized] = normalizeOffers({ data: [offer] });
-
-	// Attach extra bits exposed by this endpoint
-	const raw = offer;
-	const price = raw.price || {};
-	const extraBagAmount = (price.additionalServices || [])
-		.filter(s => s.type === 'CHECKED_BAGS')
-		.reduce((n, s) => n + Number(s.amount || 0), 0);
-
-	const fareRules = raw.fareRules?.rules || [];
-
+export const extractBookingRequirements = (confirmResponse) => {
+	const inner = confirmResponse?.data || {};
 	return {
-		...normalized,
-		// Prefer the confirmed totals
-		price: Number(price.grandTotal ?? price.total ?? normalized.price),
-		ffsdTotal: Number(price.ffsd_total ?? price.grandTotal ?? price.total ?? normalized.price),
-		extraBagAmount,
-		fareRules,
-		previousPrice: fallbackOffer?.price,
-		raw,
+		bookingRequirements: inner.bookingRequirements || null,
+		accessToken: inner.accessToken || null,
 	};
 };
 
@@ -188,7 +198,6 @@ export const stopsLabel = (n) => (n === 0 ? 'Direct' : `${n} Stop${n > 1 ? 's' :
 
 export const normalizeOffers = (payload) => {
 	const list = Array.isArray(payload) ? payload : (payload?.data || payload?.offers || []);
-	// Multi-city POST and price-confirm wrap in { data: { flightOffers: [...] } }
 	const flatList =
 		Array.isArray(list) ? list :
 		Array.isArray(payload?.data?.flightOffers) ? payload.data.flightOffers :
@@ -231,6 +240,7 @@ export const normalizeOffers = (payload) => {
 		return {
 			id: String(o.id ?? idx),
 			price: Number(o.price?.grandTotal ?? o.price?.total ?? 0),
+			ffsdTotal: Number(o.price?.ffsd_total ?? o.price?.grandTotal ?? o.price?.total ?? 0),
 			currency: o.price?.currency || 'NGN',
 			seatsLeft: Number(o.numberOfBookableSeats ?? 0),
 			itineraries,

@@ -1,188 +1,3 @@
-// import React, { useMemo } from 'react';
-// import { Col, Container, Row } from 'react-bootstrap';
-// import { Link, useLocation, useNavigate } from 'react-router-dom';
-// import Layout from '../../components/Layout/Layout';
-// import Header from '../../pages/Flights/List01/Header';
-// import { formatPrice, stopsLabel } from '../Landing2/utils/flights';
-
-// const formatTime = (at) => (at ? at.slice(11, 16) : '');
-// const formatDay = (at) => {
-// 	if (!at) return '';
-// 	return new Date(`${at.slice(0, 10)}T00:00:00`).toLocaleDateString('en-GB', {
-// 		day: '2-digit', month: 'short', year: 'numeric',
-// 	});
-// };
-// const formatDuration = (iso) => {
-// 	const m = /PT(?:(\d+)H)?(?:(\d+)M)?/.exec(iso || '');
-// 	if (!m) return '';
-// 	return [m[1] && `${m[1]}h`, m[2] && `${m[2]}m`].filter(Boolean).join(' ');
-// };
-
-// const FlightBooking = () => {
-// 	const { state } = useLocation();
-// 	const navigate = useNavigate();
-
-// 	const offer = state?.offer;
-
-// 	if (!offer) {
-// 		return (
-// 			<Layout>
-// 				<div className="container py-5 text-center">
-// 					<h4>No flight selected</h4>
-// 					<p className="text-muted">Please select a flight from the results page.</p>
-// 					<Link to="/flights" className="btn btn-primary">Back to flights</Link>
-// 				</div>
-// 			</Layout>
-// 		);
-// 	}
-
-// 	const fareDetails = offer.raw?.travelerPricings?.[0]?.fareDetailsBySegment || [];
-// 	const rawItineraries = offer.raw?.itineraries || [];
-
-// 	const totals = useMemo(() => {
-// 		const base = offer.price;
-// 		const taxes = Math.round(base * 0.07);
-// 		return { base, taxes, total: base + taxes };
-// 	}, [offer.price]);
-
-// 	return (
-// 		<Layout>
-// 			<Header />
-// 			<section className="gray-simple py-5">
-// 				<Container>
-// 					<Row className="g-4">
-// 						<Col xl={8} lg={7}>
-// 							<div className="booking-card bg-white rounded-3 p-4 mb-4">
-// 								<h5 className="fw-bold mb-4">Itinerary review</h5>
-
-// 								{offer.itineraries.map((it, i) => {
-// 									const raw = rawItineraries[i];
-// 									return (
-// 										<div key={i} className="mb-4 pb-4 border-bottom">
-// 											<div className="d-flex align-items-center mb-3">
-// 												<span className={`label ${it.label === 'Return' ? 'bg-light-success text-success' : 'bg-light-primary text-primary'} me-2`}>
-// 													{it.label}
-// 												</span>
-// 												<span className="text-muted small">{it.date}</span>
-// 											</div>
-
-// 											{(raw?.segments || []).map((seg, si) => (
-// 												<div key={seg.id || si} className="booking-segment">
-// 													<div className="d-flex align-items-center justify-content-between">
-// 														<div>
-// 															<div className="text-dark fw-bold">
-// 																{formatTime(seg.departure?.at)} · {seg.departure?.iataCode}
-// 															</div>
-// 															<div className="text-muted small">
-// 																{formatDay(seg.departure?.at)}
-// 															</div>
-// 														</div>
-// 														<div className="text-center flex-grow-1 px-3">
-// 															<div className="text-muted small">
-// 																{formatDuration(seg.duration)}
-// 															</div>
-// 															<div className="booking-line my-1">
-// 																<span></span>
-// 															</div>
-// 															<div className="text-muted small">
-// 																{seg.carrierCode} {seg.number}
-// 															</div>
-// 														</div>
-// 														<div className="text-end">
-// 															<div className="text-dark fw-bold">
-// 																{formatTime(seg.arrival?.at)} · {seg.arrival?.iataCode}
-// 															</div>
-// 															<div className="text-muted small">
-// 																{formatDay(seg.arrival?.at)}
-// 															</div>
-// 														</div>
-// 													</div>
-// 												</div>
-// 											))}
-
-// 											<div className="text-muted small mt-2">
-// 												{it.carrierName} · {it.cabin} · {stopsLabel(it.stops)} · {it.duration}
-// 											</div>
-// 										</div>
-// 									);
-// 								})}
-// 							</div>
-
-// 							<div className="booking-card bg-white rounded-3 p-4">
-// 								<h5 className="fw-bold mb-4">Passenger details</h5>
-// 								<Row className="g-3">
-// 									<Col md={6}>
-// 										<label className="form-label small text-muted">First name</label>
-// 										<input className="form-control" placeholder="John" />
-// 									</Col>
-// 									<Col md={6}>
-// 										<label className="form-label small text-muted">Last name</label>
-// 										<input className="form-control" placeholder="Doe" />
-// 									</Col>
-// 									<Col md={6}>
-// 										<label className="form-label small text-muted">Email</label>
-// 										<input type="email" className="form-control" placeholder="john@example.com" />
-// 									</Col>
-// 									<Col md={6}>
-// 										<label className="form-label small text-muted">Phone</label>
-// 										<input className="form-control" placeholder="+234..." />
-// 									</Col>
-// 								</Row>
-// 								<p className="text-muted small mt-3 mb-0">
-// 									Full booking form (passport, DOB, payment) coming next.
-// 								</p>
-// 							</div>
-// 						</Col>
-
-// 						<Col xl={4} lg={5}>
-// 							<div className="booking-card bg-white rounded-3 p-4 sticky-summary">
-// 								<h5 className="fw-bold mb-4">Fare summary</h5>
-
-// 								<div className="d-flex justify-content-between mb-2">
-// 									<span className="text-muted">Base fare</span>
-// 									<span className="fw-medium">{formatPrice(totals.base, offer.currency)}</span>
-// 								</div>
-// 								<div className="d-flex justify-content-between mb-2">
-// 									<span className="text-muted">Taxes &amp; fees</span>
-// 									<span className="fw-medium">{formatPrice(totals.taxes, offer.currency)}</span>
-// 								</div>
-// 								<hr />
-// 								<div className="d-flex justify-content-between mb-4">
-// 									<span className="fw-bold fs-5">Total</span>
-// 									<span className="fw-bold fs-5 text-primary">
-// 										{formatPrice(totals.total, offer.currency)}
-// 									</span>
-// 								</div>
-
-// 								<button
-// 									type="button"
-// 									className="btn btn-primary w-100 fw-medium"
-// 									onClick={() => alert('Payment step next')}
-// 								>
-// 									Continue to payment
-// 									<i className="bi bi-arrow-right ms-2"></i>
-// 								</button>
-
-// 								<button
-// 									type="button"
-// 									className="btn btn-link w-100 mt-2 text-muted"
-// 									onClick={() => navigate(-1)}
-// 								>
-// 									Back to results
-// 								</button>
-// 							</div>
-// 						</Col>
-// 					</Row>
-// 				</Container>
-// 			</section>
-// 		</Layout>
-// 	);
-// };
-
-// export default FlightBooking;
-
-
-
 import React, { useEffect, useMemo, useState } from 'react';
 import { Col, Container, Row } from 'react-bootstrap';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
@@ -203,14 +18,33 @@ const formatDuration = (iso) => {
 	return [m[1] && `${m[1]}h`, m[2] && `${m[2]}m`].filter(Boolean).join(' ');
 };
 
-/* ---------- Shared itinerary review block ---------- */
+/* ---------- Traveler composition helper ---------- */
+const buildTravelerSlots = (travelers, { includeInfants = false } = {}) => {
+	if (!travelers) return [{ type: 'ADULT' }];
+
+	const slots = [];
+	for (let i = 0; i < (travelers.adults || 0); i++) slots.push({ type: 'ADULT' });
+	for (let i = 0; i < (travelers.children || 0); i++) slots.push({ type: 'CHILD' });
+	if (includeInfants) {
+		for (let i = 0; i < (travelers.infants || 0); i++) slots.push({ type: 'INFANT' });
+	}
+	return slots.length ? slots : [{ type: 'ADULT' }];
+};
+
+const typeLabel = (t) =>
+	t === 'ADULT' ? 'Adult' : t === 'CHILD' ? 'Child (2–11)' : 'Infant (under 2)';
+
+const typeBadgeClass = (t) =>
+	t === 'ADULT' ? 'bg-light text-dark' :
+	t === 'CHILD' ? 'bg-light-warning text-warning' :
+	'bg-light-info text-info';
+
+/* ---------- Itinerary review ---------- */
 const ItineraryReview = ({ offer }) => {
 	const rawItineraries = offer.raw?.itineraries || [];
-
 	return (
 		<div className="booking-card bg-white rounded-3 p-4 mb-4">
 			<h5 className="fw-bold mb-4">Itinerary review</h5>
-
 			{offer.itineraries.map((it, i) => {
 				const raw = rawItineraries[i];
 				return (
@@ -221,7 +55,6 @@ const ItineraryReview = ({ offer }) => {
 							</span>
 							<span className="text-muted small">{it.date}</span>
 						</div>
-
 						{(raw?.segments || []).map((seg, si) => (
 							<div key={seg.id || si} className="booking-segment">
 								<div className="d-flex align-items-center justify-content-between">
@@ -247,7 +80,6 @@ const ItineraryReview = ({ offer }) => {
 								</div>
 							</div>
 						))}
-
 						<div className="text-muted small mt-2">
 							{it.carrierName} · {it.cabin} · {stopsLabel(it.stops)} · {it.duration}
 						</div>
@@ -258,9 +90,10 @@ const ItineraryReview = ({ offer }) => {
 	);
 };
 
-/* ---------- Passenger form ---------- */
-const emptyPassenger = () => ({
-	title: 'Mr',
+/* ---------- Passenger factory ---------- */
+const emptyPassenger = (type = 'ADULT') => ({
+	type,
+	title: type === 'CHILD' || type === 'INFANT' ? 'Mstr' : 'Mr',
 	firstName: '',
 	lastName: '',
 	dob: '',
@@ -268,16 +101,21 @@ const emptyPassenger = () => ({
 	nationality: 'NG',
 	passportNumber: '',
 	passportExpiry: '',
+	associatedAdultIndex: 0,
 });
 
-const PassengerForm = ({ index, value, onChange, errors }) => {
+/* ---------- Passenger form ---------- */
+const PassengerForm = ({ index, value, onChange, errors, adultsCount }) => {
 	const set = (field, v) => onChange(index, { ...value, [field]: v });
+	const isInfant = value.type === 'INFANT';
 
 	return (
 		<div className="booking-card bg-white rounded-3 p-4 mb-4">
 			<div className="d-flex align-items-center justify-content-between mb-3">
 				<h5 className="fw-bold mb-0">Passenger {index + 1}</h5>
-				<span className="badge bg-light text-dark">Adult</span>
+				<span className={`badge ${typeBadgeClass(value.type)}`}>
+					{typeLabel(value.type)}
+				</span>
 			</div>
 
 			<Row className="g-3">
@@ -287,6 +125,7 @@ const PassengerForm = ({ index, value, onChange, errors }) => {
 						<option>Mr</option>
 						<option>Mrs</option>
 						<option>Ms</option>
+						<option>Mstr</option>
 						<option>Dr</option>
 					</select>
 				</Col>
@@ -359,6 +198,21 @@ const PassengerForm = ({ index, value, onChange, errors }) => {
 					/>
 					{errors?.passportExpiry && <div className="invalid-feedback">{errors.passportExpiry}</div>}
 				</Col>
+
+				{isInfant && adultsCount > 0 && (
+					<Col md={6}>
+						<label className="form-label small text-muted">Travels with (adult)</label>
+						<select
+							className="form-select"
+							value={value.associatedAdultIndex}
+							onChange={e => set('associatedAdultIndex', Number(e.target.value))}
+						>
+							{Array.from({ length: adultsCount }).map((_, i) => (
+								<option key={i} value={i}>Adult {i + 1}</option>
+							))}
+						</select>
+					</Col>
+				)}
 			</Row>
 		</div>
 	);
@@ -403,18 +257,31 @@ const FlightBooking = () => {
 	const navigate = useNavigate();
 
 	const offer = state?.offer;
-	const previousOffer = state?.previousOffer;
-	const priceChanged = state?.priceChanged;
+	const travelers = state?.travelers;
 
-	// Redirect if no offer
 	useEffect(() => {
 		if (!offer) navigate('/flights', { replace: true });
 	}, [offer, navigate]);
 
-	const [passengers, setPassengers] = useState([emptyPassenger()]);
+	const slots = useMemo(
+		() => buildTravelerSlots(travelers, { includeInfants: false }),
+		[travelers]
+	);
+
+	const adultsCount = useMemo(() => slots.filter(s => s.type === 'ADULT').length, [slots]);
+
+	const [passengers, setPassengers] = useState(() => slots.map(s => emptyPassenger(s.type)));
 	const [contact, setContact] = useState({ email: '', phone: '' });
-	const [errors, setErrors] = useState({ passengers: [{}], contact: {} });
+	const [errors, setErrors] = useState({
+		passengers: slots.map(() => ({})),
+		contact: {},
+	});
 	const [submitting, setSubmitting] = useState(false);
+
+	useEffect(() => {
+		setPassengers(slots.map(s => emptyPassenger(s.type)));
+		setErrors({ passengers: slots.map(() => ({})), contact: {} });
+	}, [slots]);
 
 	const updatePassenger = (index, value) =>
 		setPassengers(list => list.map((p, i) => (i === index ? value : p)));
@@ -450,13 +317,34 @@ const FlightBooking = () => {
 
 	const handleContinue = () => {
 		if (!validate()) {
-			// Scroll to first error
 			const firstError = document.querySelector('.is-invalid');
 			if (firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
 			return;
 		}
 		setSubmitting(true);
-		// TODO: post to booking / payment endpoint
+
+		const payload = {
+			contact,
+			passengers: passengers.map(p => ({
+				type: p.type,
+				title: p.title,
+				firstName: p.firstName,
+				lastName: p.lastName,
+				dateOfBirth: p.dob,
+				gender: p.gender.toUpperCase(),
+				nationality: p.nationality,
+				passport: {
+					number: p.passportNumber,
+					expiry: p.passportExpiry,
+				},
+				...(p.type === 'INFANT'
+					? { associatedAdultIndex: p.associatedAdultIndex }
+					: {}),
+			})),
+		};
+
+		console.log('Booking payload →', payload);
+
 		setTimeout(() => {
 			setSubmitting(false);
 			alert('Passenger details valid — next step is payment.');
@@ -468,20 +356,41 @@ const FlightBooking = () => {
 			<Header />
 			<section className="gray-simple py-5">
 				<Container>
-					{priceChanged && (
-						<div className="alert alert-warning d-flex align-items-center mb-4">
-							<i className="bi bi-exclamation-triangle-fill me-2"></i>
-							<div>
-								<strong>Price updated.</strong> The fare changed from{' '}
-								{formatPrice(previousOffer?.price, previousOffer?.currency)} to{' '}
-								{formatPrice(offer.price, offer.currency)}. Your new total is reflected below.
-							</div>
-						</div>
-					)}
-
 					<Row className="g-4">
 						<Col xl={8} lg={7}>
 							<ItineraryReview offer={offer} />
+
+							{/* Traveler summary */}
+							<div className="booking-card bg-white rounded-3 p-4 mb-4">
+								<h5 className="fw-bold mb-3">Travelers</h5>
+								<div className="d-flex flex-wrap gap-3">
+									{travelers ? (
+										<>
+											<span className="badge bg-light text-dark">
+												{travelers.adults} Adult{travelers.adults !== 1 ? 's' : ''}
+											</span>
+											{travelers.children > 0 && (
+												<span className="badge bg-light-warning text-warning">
+													{travelers.children} Child{travelers.children !== 1 ? 'ren' : ''}
+												</span>
+											)}
+											{travelers.infants > 0 && (
+												<span className="badge bg-light-info text-info">
+													{travelers.infants} Infant{travelers.infants !== 1 ? 's' : ''}
+												</span>
+											)}
+										</>
+									) : (
+										<span className="text-muted small">Traveler details unavailable</span>
+									)}
+								</div>
+								{travelers?.infants > 0 && (
+									<div className="text-muted small mt-2">
+										Infants travel on an adult's lap and don't require a separate ticket form.
+										Please indicate which adult each infant is traveling with below.
+									</div>
+								)}
+							</div>
 
 							{passengers.map((p, i) => (
 								<PassengerForm
@@ -490,6 +399,7 @@ const FlightBooking = () => {
 									value={p}
 									onChange={updatePassenger}
 									errors={errors.passengers[i]}
+									adultsCount={adultsCount}
 								/>
 							))}
 

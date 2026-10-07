@@ -1889,7 +1889,16 @@
     color: #92400e;
 }
 
-/* ---------- Booking page ---------- */
+/* =========================================================
+   Traveler badges + booking page
+   ========================================================= */
+
+.bg-light-warning { background-color: #fef3c7 !important; }
+.text-warning      { color: #92400e !important; }
+.bg-light-info     { background-color: #e0f2fe !important; }
+.text-info         { color: #075985 !important; }
+
+/* Booking card shared */
 .booking-card { box-shadow: 0 1px 3px rgba(0, 0, 0, .05); }
 .booking-segment {
     padding: 12px 0;
@@ -1919,13 +1928,7 @@
     .sticky-summary { position: static; }
 }
 
-/* ---------- Price-change alert ---------- */
-.alert-warning .bi-exclamation-triangle-fill {
-    font-size: 1.25rem;
-    color: #b45309;
-}
-
-/* ---------- Passenger / contact forms ---------- */
+/* Form field styling inside booking cards */
 .booking-card .form-label {
     margin-bottom: 4px;
     font-weight: 500;
@@ -1933,12 +1936,4 @@
 .booking-card .form-control,
 .booking-card .form-select {
     font-size: 0.9rem;
-}
-
-/* ---------- Fare rules list ---------- */
-.booking-card .small.text-muted > div {
-    padding: 2px 0;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-    font-size: 0.72rem;
 }

@@ -35,7 +35,6 @@ const FlightList01 = () => {
 		const run = async () => {
 			try {
 				if (search.tripType === 'multicity') {
-					// ---- Multi-city: single POST with all legs ----
 					const body = buildMultiCityBody({
 						legs: search.legs,
 						travelers: search.travelers,
@@ -50,7 +49,6 @@ const FlightList01 = () => {
 
 					setGroups([{ title, offers }]);
 				} else {
-					// ---- Single-leg: existing GET ----
 					const responses = await Promise.all(
 						search.searches.map(s =>
 							fetchOffers(
@@ -99,6 +97,7 @@ const FlightList01 = () => {
 				error={error}
 				hasSearch={!!search}
 				onSelect={handleSelect}
+				travelers={search?.travelers}
 			/>
 		</Layout>
 	);

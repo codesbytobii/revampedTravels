@@ -27,11 +27,11 @@ const STOP_OPTIONS = [
 ];
 
 const FACILITY_OPTIONS = [
-	{ id: 'baggage',        label: 'Baggage',                icon: 'bi-briefcase' },
-	{ id: 'inflightmeal',   label: 'In-flight Meal',         icon: 'bi-cup-hot' },
+	{ id: 'baggage',        label: 'Baggage',                 icon: 'bi-briefcase' },
+	{ id: 'inflightmeal',   label: 'In-flight Meal',          icon: 'bi-cup-hot' },
 	{ id: 'inflightenter',  label: 'In-flight Entertainment', icon: 'bi-tv' },
-	{ id: 'flswifi',        label: 'WiFi',                   icon: 'bi-wifi' },
-	{ id: 'flusbport',      label: 'Power / USB Port',       icon: 'bi-plug' },
+	{ id: 'flswifi',        label: 'WiFi',                    icon: 'bi-wifi' },
+	{ id: 'flusbport',      label: 'Power / USB Port',        icon: 'bi-plug' },
 ];
 
 const hourOf = (timeStr) => {
@@ -115,7 +115,7 @@ const FilterSection = ({ id, title, subtitle, children, openSections, toggleSect
 	);
 };
 
-const MainConent = ({ groups = [], loading, error, hasSearch, onSelect }) => {
+const MainConent = ({ groups = [], loading, error, hasSearch, onSelect, travelers }) => {
 	/* ---------- filter state ---------- */
 	const [departureBuckets, setDepartureBuckets] = useState([]);
 	const [returnBuckets, setReturnBuckets]       = useState([]);
@@ -620,7 +620,12 @@ const MainConent = ({ groups = [], loading, error, hasSearch, onSelect }) => {
 							)}
 
 							{!loading && !error && paged.map((offer) => (
-								<FlightCard key={offer.id} offer={offer} onSelect={onSelect} />
+								<FlightCard
+									key={offer.id}
+									offer={offer}
+									onSelect={onSelect}
+									travelers={travelers}
+								/>
 							))}
 
 							{!loading && filtered.length > PAGE_SIZE && (

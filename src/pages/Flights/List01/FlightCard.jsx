@@ -1,6 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { formatPrice, stopsLabel, confirmPrice, normalizeConfirmedOffer } from '../../Landing2/utils/flights';
+import {
+	formatPrice,
+	stopsLabel,
+	confirmPrice,
+	extractBookingRequirements,
+	savePayToken,
+} from '../../Landing2/utils/flights';
 
 const AirlineLogo = ({ code, name }) => (
 	<img
@@ -79,7 +85,7 @@ const ItineraryRow = ({ it, withTopMargin }) => (
 	</div>
 );
 
-/* ---------- Expanded details ---------- */
+/* ---------- Expanded details for one itinerary ---------- */
 const ItineraryDetails = ({ itinerary, raw, fareDetails }) => {
 	const segments = raw?.segments || [];
 
@@ -195,6 +201,7 @@ const ItineraryDetails = ({ itinerary, raw, fareDetails }) => {
 	);
 };
 
+/* ---------- One leg accordion ---------- */
 const LegAccordion = ({ itinerary, raw, fareDetails, defaultOpen }) => {
 	const [open, setOpen] = useState(!!defaultOpen);
 	return (
@@ -227,7 +234,7 @@ const LegAccordion = ({ itinerary, raw, fareDetails, defaultOpen }) => {
 };
 
 /* ---------- FlightCard ---------- */
-const FlightCard = ({ offer, onSelect }) => {
+const FlightCard = ({ offer, onSelect, travelers }) => {
 	const [expanded, setExpanded] = useState(false);
 	const [confirming, setConfirming] = useState(false);
 	const [confirmError, setConfirmError] = useState('');
@@ -246,22 +253,33 @@ const FlightCard = ({ offer, onSelect }) => {
 		setConfirming(true);
 
 		try {
-			// 1) Confirm price with the API
-			const payload = await confirmPrice(offer.raw, true);
-			const confirmed = normalizeConfirmedOffer(payload, offer);
+			const payload = await confirmPrice(offer.raw);
+			const { bookingRequirements, accessToken } = extractBookingRequirements(payload);
 
-			// 2) Navigate to booking page with both previous and confirmed offer
+			if (accessToken) savePayToken(accessToken);
+			localStorage.setItem('bookingRequirements', JSON.stringify(bookingRequirements || {}));
+			localStorage.setItem('travelerRequirements', JSON.stringify(bookingRequirements?.travelerRequirements || []));
+			localStorage.setItem('selectedFlight', JSON.stringify(offer.raw));
+
+			const requiredKeys = ['emailAddressRequired', 'mobilePhoneNumberRequired'];
+			const bookingKeys = bookingRequirements ? Object.keys(bookingRequirements) : [];
+			const hasOnlyRequiredKeys =
+				bookingKeys.length === requiredKeys.length &&
+				requiredKeys.every(k => bookingKeys.includes(k));
+
+			setConfirming(false);
+
 			navigate(`/flights/book/${offer.id}`, {
 				state: {
-					offer: confirmed,
-					previousOffer: offer,
-					priceChanged: confirmed.price !== offer.price,
+					offer,
+					travelers,
+					bookingRequirements,
+					hasOnlyRequiredKeys,
 				},
 			});
 		} catch (err) {
 			console.error(err);
-			setConfirmError("Couldn't confirm the price. Please try again.");
-		} finally {
+			setConfirmError(err.message || "Couldn't confirm the price. Please try again.");
 			setConfirming(false);
 		}
 	};
