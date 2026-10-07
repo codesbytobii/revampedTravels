@@ -94,7 +94,7 @@ function Contactv1() {
                                 </div>
                                 <div className="crds-desc">
                                     <h5>Drop a Mail</h5>
-                                    <p className="text-md lh-2 mb-0">pay@payments.com<br />pay@payments.com</p>
+                                    <p className="text-md lh-2 mb-0">admin@ffsdtravels.com<br />support@ffsdtravels.com</p>
                                 </div>
                             </div>
 
@@ -103,7 +103,7 @@ function Contactv1() {
                                 </div>
                                 <div className="crds-desc">
                                     <h5>Call Us</h5>
-                                    <p className="text-md lh-2 mb-0">(0522) 2563568<br />+91 256 6548 457</p>
+                                    <p className="text-md lh-2 mb-0">08070866594</p>
                                 </div>
                             </div>
                         </Col>
@@ -112,9 +112,10 @@ function Contactv1() {
 
                     <Row className="mt-5">
                         <Col xs={12}>
-                            <iframe className="full-width ht-400 grayscale rounded"
+                            {/* <iframe className="full-width ht-400 grayscale rounded"
                                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3022.9663095343008!2d-74.00425878428698!3d40.74076684379132!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c259bf5c1654f3%3A0xc80f9cfce5383d5d!2sGoogle!5e0!3m2!1sen!2sin!4v1586000412513!5m2!1sen!2sin"
-                                height="500" style={{ border: 0 }} aria-hidden="false" tabIndex={0}></iframe>
+                                height="500" style={{ border: 0 }} aria-hidden="false" tabIndex={0}></iframe> */}
+                            <iframe className="full-width ht-400 grayscale rounded" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3963.5640128181412!2d3.3435779740286553!3d6.576575222546291!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x103b93414ba10e41%3A0x9454f60a25abe130!2sFFSD!5e0!3m2!1sen!2sng!4v1791374722728!5m2!1sen!2sng" height="500" style={{ border: 0 }} aria-hidden="false" tabIndex={0}></iframe>
                         </Col>
                     </Row>
 
