@@ -38,6 +38,7 @@ const MyWishlists = lazy(() => import('./pages/Profile/MyWishlists'));
 const Settings = lazy(() => import('./pages/Profile/Settings'));
 const DeleteAccount = lazy(() => import('./pages/Profile/DeleteAccount'));
 import FlightBooking from './pages/Flights/FlightBooking';
+import BookingSuccess from './pages/Flights/BookingSuccess';
 
 // inside your <Routes>
 
@@ -62,6 +63,7 @@ function App() {
       <Route path="/flight-detail" element={<FlightDetails />} />
 
       <Route path="/flights/book/:id" element={<FlightBooking />} />
+      <Route path="/booking-success" element={<BookingSuccess />} />
 
       <Route path="/my-profile" element={<MyProfile />} />
       <Route path="/my-booking" element={<MyBooking />} />

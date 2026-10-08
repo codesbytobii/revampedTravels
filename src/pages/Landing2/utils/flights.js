@@ -248,3 +248,95 @@ export const normalizeOffers = (payload) => {
 		};
 	});
 };
+
+
+/* =========================================================
+   PAYMENT + BOOKING
+   ========================================================= */
+const API_URL = 'https://travels.ffsdgroup.com/api'; // ← adjust if yours differs
+
+/* ---------- 1. Initiate payment ---------- */
+export const initiatePayment = async ({ email, amount, flightOrderId }) => {
+	const url = `${API_URL}/generate/payment?paid_by_email=${encodeURIComponent(email)}&amount=${amount}&flight_order_am_id=${flightOrderId}`;
+	const res = await fetch(url, {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+	});
+	if (!res.ok) throw new Error(`Payment initiation failed (${res.status})`);
+	return res.json(); // { access_code, reference, payment: { amount } }
+};
+
+/* ---------- 2. Verify payment ---------- */
+export const verifyPayment = async ({ reference, amount }) => {
+	const url = `${API_URL}?reference=${encodeURIComponent(reference)}&amount=${encodeURIComponent(amount)}`;
+	const res = await fetch(url, {
+		method: 'GET',
+		headers: { 'Content-Type': 'application/json' },
+	});
+	if (!res.ok) throw new Error(`Payment verification failed (${res.status})`);
+	return res.json(); // { success: boolean, ... }
+};
+
+/* ---------- 3. Book flight ---------- */
+export const bookFlight = async (bookingData) => {
+	const token = getConfirmToken();
+	if (!token) throw new Error('Missing confirmPriceToken. Please search again.');
+
+	const res = await fetch(`${API_URL}/flight/book`, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${token}`,
+		},
+		body: JSON.stringify(bookingData),
+	});
+
+	const text = await res.text();
+	let data;
+	try { data = JSON.parse(text); } catch { data = null; }
+
+	if (!res.ok) {
+		console.error('Booking failed:', res.status, text);
+		throw new Error(data?.message || `Booking failed (${res.status})`);
+	}
+	return data;
+};
+
+/* ---------- 4. Build booking payload ---------- */
+export const buildBookingPayload = ({ flightDetails, travelers, remarks = 'FFSD ONLINE BOOKING.' }) => ({
+	data: {
+		type: 'flight-order',
+		flightOffers: [flightDetails],
+		travelers,
+		remarks: {
+			general: [
+				{
+					subType: 'GENERAL_MISCELLANEOUS',
+					text: remarks,
+				},
+			],
+		},
+		ticketingAgreement: {
+			option: 'DELAY_TO_CANCEL',
+			delay: '6D',
+		},
+		contacts: [
+			{
+				addresseeName: { firstName: 'KINGSLEY', lastName: 'UCHE' },
+				companyName: 'FFSD TRAVELS',
+				purpose: 'STANDARD',
+				phones: [
+					{ deviceType: 'LANDLINE', countryCallingCode: '34', number: '480080071' },
+					{ deviceType: 'MOBILE',   countryCallingCode: '33', number: '480080072' },
+				],
+				emailAddress: 'support@ffsdtravels.com',
+				address: {
+					lines: ['Calle Prado, 16'],
+					postalCode: '28014',
+					cityName: 'Madrid',
+					countryCode: 'ES',
+				},
+			},
+		],
+	},
+});
