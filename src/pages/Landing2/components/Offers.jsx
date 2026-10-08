@@ -1,41 +1,49 @@
 import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
-import attr5 from '../../../assets/img/attr/attr-5.jpg';
-import attr6 from '../../../assets/img/attr/attr-6.jpg';
-import attr7 from '../../../assets/img/attr/attr-7.jpg';
-import attr8 from '../../../assets/img/attr/attr-8.jpg';
-import attr9 from '../../../assets/img/attr/attr-9.jpg';
-import attr10 from '../../../assets/img/attr/attr-10.jpg';
-import tour10 from '../../../assets/img/tours/tour-10.jpg';
-import tour11 from '../../../assets/img/tours/tour-11.jpg';
+import { Link, useNavigate } from 'react-router-dom';
 
-/* ---------- Sample data (swap for your API) ---------- */
-const OFFERS = [
-	{ id: 1, type: 'flight', from: 'Abuja', to: 'Doha', airline: 'Egyptair', duration: '12d', price: 2541152, img: attr7, tag: 'Fresh deals' },
-	{ id: 2, type: 'flight', from: 'Abuja', to: 'Lagos', airline: 'Aero', duration: '1d', price: 94143, img: attr5, tag: 'Best value' },
-	{ id: 3, type: 'flight', from: 'Lagos', to: 'Washington', airline: 'Qatar Airways', duration: '20d', price: 2112446, img: attr6, tag: 'Fresh deals' },
-	{ id: 4, type: 'flight', from: 'Lagos', to: 'Abuja', airline: 'Aero', duration: '1d', price: 94881, img: attr8, tag: 'Popular' },
-	{ id: 5, type: 'hotel', name: 'Harbour View Suites', city: 'Lagos', stars: 5, price: 185000, img: attr9, tag: 'Top rated' },
-	{ id: 6, type: 'hotel', name: 'Capital Grand Hotel', city: 'Abuja', stars: 4, price: 132000, img: attr10, tag: 'Fresh deals' },
-	{ id: 7, type: 'flight', from: 'Lagos', to: 'London', airline: 'British Airways', duration: '14d', price: 1386500, img: tour10, tag: 'Popular' },
-	{ id: 8, type: 'hotel', name: 'Palm Crest Resort', city: 'Dubai', stars: 5, price: 310000, img: tour11, tag: 'Top rated' },
+import { POPULAR_ROUTES } from '../../../utils/popularRoutes';
+
+/* ---------- Imagery ---------- */
+import abuja    from '../../../assets/img/attr/attr-5.jpg';
+import lagos    from '../../../assets/img/attr/attr-8.jpg';
+import phc      from '../../../assets/img/attr/attr-6.jpg';
+import accra    from '../../../assets/img/attr/attr-7.jpg';
+import doha     from '../../../assets/img/attr/attr-9.jpg';
+import casablanca from '../../../assets/img/attr/attr-10.jpg';
+import nairobi  from '../../../assets/img/tours/tour-10.jpg';
+import london   from '../../../assets/img/tours/tour-11.jpg';
+import paris    from '../../../assets/img/attr/attr-6.jpg';
+import dubai    from '../../../assets/img/attr/attr-9.jpg';
+import dc       from '../../../assets/img/attr/attr-7.jpg';
+
+const CITY_IMAGE = {
+	ABV: abuja,
+	LOS: lagos,
+	PHC: phc,
+	ACC: accra,
+	DOH: doha,
+	CMN: casablanca,
+	NBO: nairobi,
+	LHR: london,
+	CDG: paris,
+	DXB: dubai,
+	IAD: dc,
+};
+const imageFor = (route) => CITY_IMAGE[route.to] || lagos;
+
+const REGION_TABS = [
+	{ key: 'all',       label: 'All' },
+	{ key: 'Domestic',  label: 'Nigeria' },
+	{ key: 'Regional',  label: 'Africa & Middle East' },
+	{ key: 'Long haul', label: 'Long haul' },
 ];
 
-const TABS = [
-	{ key: 'all', label: 'All Offers' },
-	{ key: 'flight', label: 'Flights' },
-	{ key: 'hotel', label: 'Hotels' },
-];
-
-const PAGE_SIZE = 4;          // desktop / tablet: cards per page
-const AUTOPLAY_MS = 4500;     // mobile slider: time between slides
+const PAGE_SIZE = 6;
+const AUTOPLAY_MS = 6000;
 const MOBILE_QUERY = '(max-width: 767.98px)';
 
-const formatNaira = (n) =>
-	new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', maximumFractionDigits: 0 }).format(n);
-
-/* true while the viewport is phone-sized (keeps in sync when rotating / resizing) */
+/* ---------- Helpers ---------- */
 function useIsMobile() {
 	const [mobile, setMobile] = useState(
 		() => typeof window !== 'undefined' && window.matchMedia(MOBILE_QUERY).matches
@@ -54,83 +62,120 @@ function useIsMobile() {
 	return mobile;
 }
 
-/* Small, scoped extras that Bootstrap utilities can't do (hover, image fill, tab underline) */
+/* Two-letter code rendered next to the label */
+const Code = ({ code }) => (
+	<span className="rt-code">{code}</span>
+);
 
 /* ---------- Card ---------- */
-function OfferCard({ offer }) {
-	const isFlight = offer.type === 'flight';
+function RouteCard({ route, onClick, index }) {
 	return (
-		<Link to="#" className="offer-card card h-100 rounded-3 border m-0 flex-row overflow-hidden text-decoration-none">
-			<div className="offer-thumb">
-				<img src={offer.img} alt="" loading="lazy" draggable={false} />
+		<button
+			type="button"
+			onClick={() => onClick(route)}
+			className="rt-card"
+			style={{ '--i': index }}
+		>
+			<div className="rt-card-media">
+				<img src={imageFor(route)} alt="" loading="lazy" draggable={false} />
+				<div className="rt-card-region">{route.region}</div>
+				{route.tag && <div className="rt-card-tag">{route.tag}</div>}
 			</div>
 
-			<div className="p-3 p-md-4 d-flex flex-column flex-grow-1">
-				<div className="d-flex align-items-center justify-content-between">
-					<span className="text-uppercase fw-bold text-muted" style={{ fontSize: '.72rem', letterSpacing: '.08em' }}>
-						{isFlight ? 'Flights' : 'Hotels'}
+			<div className="rt-card-content">
+				<div className="rt-card-cities">
+					<span className="rt-city">
+						<Code code={route.from} />
+						<span className="rt-city-name">{route.fromCity}</span>
 					</span>
-					<span className="text-uppercase text-muted" style={{ fontSize: '.68rem', letterSpacing: '.06em' }}>
-						{offer.tag}
+
+					<span className="rt-route-line" aria-hidden="true">
+						<span className="rt-route-dash" />
+						<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12h20M14 6l6 6-6 6"/></svg>
+					</span>
+
+					<span className="rt-city rt-city--right">
+						<span className="rt-city-name">{route.toCity}</span>
+						<Code code={route.to} />
 					</span>
 				</div>
 
-				<h4 className="fs-5 fw-bold text-dark mt-2 mb-0">
-					{isFlight ? (
-						<>{offer.from} <i className="bi bi-arrow-right text-primary mx-1"></i> {offer.to}</>
-					) : (
-						offer.name
-					)}
-				</h4>
-				<div className="offer-bar mt-2 mb-3"></div>
+				<div className="rt-card-meta">
+					<span className="rt-meta-item">
+						<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+						{route.duration}
+					</span>
+					<span className="rt-meta-sep" />
+					<span className="rt-meta-item">Depart today</span>
+				</div>
 
-				<p className="text-muted m-0">
-					{isFlight
-						? <>{offer.airline} · {offer.duration} · from <span className="fw-bold text-dark">{formatNaira(offer.price)}</span></>
-						: <>{offer.city} · {offer.stars}-star · from <span className="fw-bold text-dark">{formatNaira(offer.price)}</span> / night</>}
-				</p>
-
-				<div className="mt-auto pt-3 text-end">
-					<span className="offer-cta text-primary fw-bold text-uppercase" style={{ fontSize: '.82rem', letterSpacing: '.05em' }}>
-						Book now <i className="bi bi-arrow-right ms-1 d-inline-block"></i>
+				<div className="rt-card-foot">
+					<span className="rt-cta">
+						View fares
+						<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
 					</span>
 				</div>
 			</div>
-		</Link>
+		</button>
 	);
 }
 
 /* ---------- Section ---------- */
 function Offers() {
+	const navigate = useNavigate();
 	const isMobile = useIsMobile();
 	const trackRef = useRef(null);
 
-	const [tab, setTab] = useState('all');
-	const [page, setPage] = useState(0);   // desktop paging
-	const [slide, setSlide] = useState(0); // mobile slider position
+	const [region, setRegion] = useState('all');
+	const [page, setPage] = useState(0);
+	const [slide, setSlide] = useState(0);
 	const [paused, setPaused] = useState(false);
 	const [inView, setInView] = useState(true);
 
 	const filtered = useMemo(
-		() => (tab === 'all' ? OFFERS : OFFERS.filter(o => o.type === tab)),
-		[tab]
+		() => (region === 'all' ? POPULAR_ROUTES : POPULAR_ROUTES.filter(r => r.region === region)),
+		[region]
 	);
 	const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
 
-	// mobile shows every offer in the slider; larger screens keep the paged grid
 	const items = isMobile
 		? filtered
 		: filtered.slice(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE);
 
-	const changeTab = (key) => { setTab(key); setPage(0); setSlide(0); };
+	const changeRegion = (key) => { setRegion(key); setPage(0); setSlide(0); };
 
-	/* ----- mobile slider helpers ----- */
+	const handleClick = useCallback((route) => {
+		const now = new Date();
+		const yyyy = now.getFullYear();
+		const mm = String(now.getMonth() + 1).padStart(2, '0');
+		const dd = String(now.getDate()).padStart(2, '0');
+
+		navigate('/flights', {
+			state: {
+				search: {
+					tripType: 'oneway',
+					cabin: 'Economy',
+					travelers: { adults: 1, children: 0, infants: 0 },
+					searches: [{
+						origin: route.from,
+						destination: route.to,
+						date: `${yyyy}-${mm}-${dd}`,
+					}],
+				},
+			},
+		});
+	}, [navigate]);
+
+	/* mobile slider */
 	const goTo = useCallback((i) => {
 		const el = trackRef.current;
 		if (!el || !el.children[i]) return;
 		const child = el.children[i];
 		const offset = child.getBoundingClientRect().left - el.getBoundingClientRect().left;
-		el.scrollTo({ left: el.scrollLeft + offset - (el.clientWidth - child.offsetWidth) / 2, behavior: 'smooth' });
+		el.scrollTo({
+			left: el.scrollLeft + offset - (el.clientWidth - child.offsetWidth) / 2,
+			behavior: 'smooth',
+		});
 	}, []);
 
 	const onScroll = useCallback(() => {
@@ -143,14 +188,12 @@ function Offers() {
 		setSlide(Math.min(last, Math.max(0, i)));
 	}, [isMobile, filtered.length]);
 
-	// start from the first card whenever the tab (or layout) changes
 	useEffect(() => {
 		const el = trackRef.current;
 		if (el) el.scrollTo({ left: 0 });
 		setSlide(0);
-	}, [tab, isMobile]);
+	}, [region, isMobile]);
 
-	// only autoplay while the slider is on screen
 	useEffect(() => {
 		const el = trackRef.current;
 		if (!el || typeof IntersectionObserver === 'undefined') return undefined;
@@ -159,71 +202,72 @@ function Offers() {
 		return () => io.disconnect();
 	}, []);
 
-	// autoplay: advances every few seconds and loops; a fresh timer starts after every slide change
 	useEffect(() => {
 		if (!isMobile || paused || !inView || filtered.length <= 1) return undefined;
 		const id = setTimeout(() => goTo(slide >= filtered.length - 1 ? 0 : slide + 1), AUTOPLAY_MS);
 		return () => clearTimeout(id);
 	}, [isMobile, paused, inView, slide, filtered.length, goTo]);
 
-	/* dots: one per slide on mobile, one per page elsewhere */
 	const dotCount = isMobile ? filtered.length : pageCount;
 	const dotActive = isMobile ? slide : page;
 	const onDot = (i) => (isMobile ? goTo(i) : setPage(i));
 
 	return (
-		<section className="offers-section">
+		<section className="rt-section">
 			<Container>
-				<Row className="mb-4">
-					<Col xs={12}>
-						<div className="offers-head">
-							<h2 className="offers-title m-0">Offers</h2>
+				{/* ---------- Header ---------- */}
+				<div className="rt-head">
+					<div className="rt-head-left">
+						<span className="rt-eyebrow">
+							<span className="rt-eyebrow-line" />
+							Popular routes
+						</span>
+						<h2 className="rt-headline">
+							Where travelers are flying<br />
+							<span className="rt-headline-accent">this season.</span>
+						</h2>
+					</div>
 
-							<div className="offers-tabs" role="tablist" aria-label="Offer categories">
-								{TABS.map(t => (
-									<button
-										key={t.key}
-										type="button"
-										role="tab"
-										aria-selected={tab === t.key}
-										className={`offers-tab ${tab === t.key ? 'is-active' : ''}`}
-										onClick={() => changeTab(t.key)}
-									>
-										{t.label}
-									</button>
-								))}
-							</div>
+					<div className="rt-head-right">
+						<nav className="rt-regions" role="tablist">
+							{REGION_TABS.map(t => (
+								<button
+									key={t.key}
+									type="button"
+									role="tab"
+									aria-selected={region === t.key}
+									className={`rt-region ${region === t.key ? 'is-active' : ''}`}
+									onClick={() => changeRegion(t.key)}
+								>
+									{t.label}
+								</button>
+							))}
+						</nav>
 
-							<div className="offers-controls">
-								<Link to="#" className="fw-bold text-uppercase text-primary text-decoration-none me-2" style={{ fontSize: '.85rem' }}>
-									View all
-								</Link>
-								{/* arrows are for the paged grid; mobile uses swipe + dots */}
-								<div className="d-none d-md-flex align-items-center gap-2">
-									<button
-										type="button"
-										className="offers-arrow"
-										aria-label="Previous offers"
-										disabled={page === 0}
-										onClick={() => setPage(p => Math.max(0, p - 1))}
-									>
-										<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6" /></svg>
-									</button>
-									<button
-										type="button"
-										className="offers-arrow"
-										aria-label="Next offers"
-										disabled={page >= pageCount - 1}
-										onClick={() => setPage(p => Math.min(pageCount - 1, p + 1))}
-									>
-										<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6" /></svg>
-									</button>
-								</div>
-							</div>
+						<div className="rt-nav">
+							<button
+								type="button"
+								className="rt-nav-btn"
+								aria-label="Previous"
+								disabled={page === 0}
+								onClick={() => setPage(p => Math.max(0, p - 1))}
+							>
+								<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M15 6l-6 6 6 6"/></svg>
+							</button>
+							<button
+								type="button"
+								className="rt-nav-btn"
+								aria-label="Next"
+								disabled={page >= pageCount - 1}
+								onClick={() => setPage(p => Math.min(pageCount - 1, p + 1))}
+							>
+								<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+							</button>
 						</div>
-					</Col>
-				</Row>
+					</div>
+				</div>
 
+				{/* ---------- Grid / Slider ---------- */}
 				<Row
 					ref={trackRef}
 					onScroll={onScroll}
@@ -232,33 +276,37 @@ function Offers() {
 					onTouchCancel={() => setPaused(false)}
 					onMouseEnter={() => setPaused(true)}
 					onMouseLeave={() => setPaused(false)}
-					className="offers-row justify-content-center gy-4 gx-xl-3 gx-lg-4 gx-4"
+					className="rt-grid g-3"
 				>
-					{items.map(o => (
-						<Col key={o.id} xl={6} lg={6} md={12} sm={12}>
-							<OfferCard offer={o} />
+					{items.map((r, i) => (
+						<Col key={r.id} xl={4} lg={4} md={6} sm={12} xs={12}>
+							<RouteCard route={r} onClick={handleClick} index={i} />
 						</Col>
 					))}
 				</Row>
 
-				{dotCount > 1 && (
-					<Row className="align-items-center justify-content-center">
-						<Col xl={12} lg={12} md={12}>
-							<div className="d-flex justify-content-center gap-2 mt-3 mt-md-4" role="group" aria-label="Offer slides">
-								{Array.from({ length: dotCount }).map((_, i) => (
-									<button
-										key={i}
-										type="button"
-										aria-label={`Go to ${isMobile ? 'offer' : 'page'} ${i + 1}`}
-										aria-current={i === dotActive}
-										className={`offers-dot ${i === dotActive ? 'is-active' : ''}`}
-										onClick={() => onDot(i)}
-									/>
-								))}
-							</div>
-						</Col>
-					</Row>
-				)}
+				{/* ---------- Footer ---------- */}
+				<div className="rt-foot">
+					{dotCount > 1 && (
+						<div className="rt-dots" role="group" aria-label="Pages">
+							{Array.from({ length: dotCount }).map((_, i) => (
+								<button
+									key={i}
+									type="button"
+									aria-label={`Go to ${isMobile ? 'route' : 'page'} ${i + 1}`}
+									aria-current={i === dotActive}
+									className={`rt-dot ${i === dotActive ? 'is-active' : ''}`}
+									onClick={() => onDot(i)}
+								/>
+							))}
+						</div>
+					)}
+
+					<Link to="/flights" className="rt-viewall">
+						Explore all routes
+						<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+					</Link>
+				</div>
 			</Container>
 		</section>
 	);

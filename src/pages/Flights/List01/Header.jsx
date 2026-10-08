@@ -312,7 +312,7 @@ const Header = ({ search, onSearch }) => {
 
 	const initialLeg = search?.searches?.[0] || {};
 
-	const [tripType, setTripType] = useState(search?.tripType || 'return');
+	const [tripType, setTripType] = useState(search?.tripType || 'oneway');
 	const [cabin, setCabin] = useState(search?.cabin || 'Economy');
 	const [travelers, setTravelers] = useState(search?.travelers || DEFAULT_TRAVELERS);
 
@@ -431,8 +431,8 @@ const Header = ({ search, onSearch }) => {
 					<div className="hdr2-top">
 						<div className="hdr2-tabs">
 							{[
-								['return',    'Return',     'bi-arrow-left-right'],
 								['oneway',    'One way',    'bi-arrow-right'],
+								['return',    'Return',     'bi-arrow-left-right'],
 								['multicity', 'Multi-city', 'bi-signpost-split'],
 							].map(([id, label, icon]) => (
 								<button
