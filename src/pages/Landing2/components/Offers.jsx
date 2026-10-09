@@ -2,33 +2,25 @@ import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 
-import { POPULAR_ROUTES } from '../../../utils/popularRoutes';
+import { POPULAR_ROUTES } from '../utils/popularRoutes';
 
 /* ---------- Imagery ---------- */
-import abuja    from '../../../assets/img/attr/attr-5.jpg';
-import lagos    from '../../../assets/img/attr/attr-8.jpg';
-import phc      from '../../../assets/img/attr/attr-6.jpg';
-import accra    from '../../../assets/img/attr/attr-7.jpg';
-import doha     from '../../../assets/img/attr/attr-9.jpg';
+import abuja      from '../../../assets/img/attr/attr-5.jpg';
+import lagos      from '../../../assets/img/attr/attr-8.jpg';
+import phc        from '../../../assets/img/attr/attr-6.jpg';
+import accra      from '../../../assets/img/attr/attr-7.jpg';
+import doha       from '../../../assets/img/attr/attr-9.jpg';
 import casablanca from '../../../assets/img/attr/attr-10.jpg';
-import nairobi  from '../../../assets/img/tours/tour-10.jpg';
-import london   from '../../../assets/img/tours/tour-11.jpg';
-import paris    from '../../../assets/img/attr/attr-6.jpg';
-import dubai    from '../../../assets/img/attr/attr-9.jpg';
-import dc       from '../../../assets/img/attr/attr-7.jpg';
+import nairobi    from '../../../assets/img/tours/tour-10.jpg';
+import london     from '../../../assets/img/tours/tour-11.jpg';
+import paris      from '../../../assets/img/attr/attr-6.jpg';
+import dubai      from '../../../assets/img/attr/attr-9.jpg';
+import dc         from '../../../assets/img/attr/attr-7.jpg';
 
 const CITY_IMAGE = {
-	ABV: abuja,
-	LOS: lagos,
-	PHC: phc,
-	ACC: accra,
-	DOH: doha,
-	CMN: casablanca,
-	NBO: nairobi,
-	LHR: london,
-	CDG: paris,
-	DXB: dubai,
-	IAD: dc,
+	ABV: abuja, LOS: lagos, PHC: phc, ACC: accra, DOH: doha,
+	CMN: casablanca, NBO: nairobi, LHR: london, CDG: paris,
+	DXB: dubai, IAD: dc,
 };
 const imageFor = (route) => CITY_IMAGE[route.to] || lagos;
 
@@ -62,10 +54,7 @@ function useIsMobile() {
 	return mobile;
 }
 
-/* Two-letter code rendered next to the label */
-const Code = ({ code }) => (
-	<span className="rt-code">{code}</span>
-);
+const Code = ({ code }) => <span className="rt-code">{code}</span>;
 
 /* ---------- Card ---------- */
 function RouteCard({ route, onClick, index }) {
@@ -166,7 +155,6 @@ function Offers() {
 		});
 	}, [navigate]);
 
-	/* mobile slider */
 	const goTo = useCallback((i) => {
 		const el = trackRef.current;
 		if (!el || !el.children[i]) return;
@@ -267,7 +255,7 @@ function Offers() {
 					</div>
 				</div>
 
-				{/* ---------- Grid / Slider ---------- */}
+				{/* ---------- Grid ---------- */}
 				<Row
 					ref={trackRef}
 					onScroll={onScroll}
