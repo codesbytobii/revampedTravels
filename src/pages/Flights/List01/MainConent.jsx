@@ -1,7 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Col, Container, Row, Spinner } from 'react-bootstrap';
 
-// assets
 import air1 from "../../../assets/img/air-1.png";
 import air2 from "../../../assets/img/air-2.png";
 import air3 from "../../../assets/img/air-3.png";
@@ -12,7 +11,6 @@ import FlightCard from './FlightCard';
 
 const PAGE_SIZE = 5;
 
-/* ----- time bucket helpers ----- */
 const BUCKETS = [
 	{ id: 'before6am', label: 'Before 6AM', test: (h) => h < 6 },
 	{ id: '6am12pm',   label: '6AM - 12PM', test: (h) => h >= 6 && h < 12 },
@@ -39,7 +37,6 @@ const hourOf = (timeStr) => {
 	return Number.isNaN(h) ? null : h;
 };
 
-/* ----- filter matcher ----- */
 const offerMatchesFilters = (offer, f) => {
 	const { departureBuckets, returnBuckets, onwardStops, returnStops, priceMin, priceMax, airlines } = f;
 	const dep = offer.itineraries[0];
@@ -86,7 +83,6 @@ const offerMatchesFilters = (offer, f) => {
 	return true;
 };
 
-/* ----- accordion section ----- */
 const FilterSection = ({ id, title, subtitle, children, openSections, toggleSection, badge }) => {
 	const isOpen = openSections.includes(id);
 	return (
@@ -115,8 +111,7 @@ const FilterSection = ({ id, title, subtitle, children, openSections, toggleSect
 	);
 };
 
-const MainConent = ({ groups = [], loading, error, hasSearch, onSelect, travelers }) => {
-	/* ---------- filter state ---------- */
+const MainConent = ({ groups = [], loading, error, hasSearch, onSelect, travelers, admin = false }) => {
 	const [departureBuckets, setDepartureBuckets] = useState([]);
 	const [returnBuckets, setReturnBuckets]       = useState([]);
 	const [onwardStops, setOnwardStops]           = useState([]);
@@ -134,7 +129,6 @@ const MainConent = ({ groups = [], loading, error, hasSearch, onSelect, traveler
 			list.includes(id) ? list.filter(x => x !== id) : [...list, id]
 		);
 
-	/* ---------- data ---------- */
 	const allOffers = useMemo(() => groups.flatMap(g => g.offers || []), [groups]);
 
 	const realMin = useMemo(
@@ -171,7 +165,6 @@ const MainConent = ({ groups = [], loading, error, hasSearch, onSelect, traveler
 	const fallbackLogos = [air1, air2, air3, air4, air5];
 	const logoFor = (code) => `https://images.kiwi.com/airlines/64/${code}.png`;
 
-	/* ---------- toggles ---------- */
 	const toggleIn = (setter) => (id) =>
 		setter(list => (list.includes(id) ? list.filter(x => x !== id) : [...list, id]));
 
@@ -194,7 +187,6 @@ const MainConent = ({ groups = [], loading, error, hasSearch, onSelect, traveler
 		setPage(1);
 	};
 
-	/* ---------- active filter chips ---------- */
 	const activeChips = useMemo(() => {
 		const chips = [];
 		departureBuckets.forEach(id => {
@@ -231,7 +223,6 @@ const MainConent = ({ groups = [], loading, error, hasSearch, onSelect, traveler
 		return chips;
 	}, [departureBuckets, returnBuckets, onwardStops, returnStops, priceMin, priceMax, facilities, airlines, airlineRows, realMin, realMax]);
 
-	/* ---------- apply filters + sort ---------- */
 	const filtered = useMemo(() => {
 		const f = {
 			departureBuckets, returnBuckets,
@@ -257,29 +248,22 @@ const MainConent = ({ groups = [], loading, error, hasSearch, onSelect, traveler
 	const sliderMax = priceMax ?? realMax;
 
 	return (
-		<section className="gray-simple">
+		<section className={admin ? 'admin-flight-results' : 'gray-simple'}>
 			<Container>
 				<Row className="justify-content-between align-items-start gy-4 gx-xl-4 gx-lg-3 gx-md-3 gx-4">
 
 					{/* ============== FILTERS SIDEBAR ============== */}
 					<Col xl={3} lg={4} md={12}>
 						<div className="filter-card">
-
 							<div className="filter-card-header">
 								<div>
 									<h6 className="filter-card-title">Filters</h6>
 									<p className="filter-card-subtitle">
-										{loading
-											? 'Loading…'
-											: `${filtered.length} of ${totalOffers} flights`}
+										{loading ? 'Loading…' : `${filtered.length} of ${totalOffers} flights`}
 									</p>
 								</div>
 								{activeChips.length > 0 && (
-									<button
-										type="button"
-										onClick={clearAll}
-										className="filter-clear-btn"
-									>
+									<button type="button" onClick={clearAll} className="filter-clear-btn">
 										Clear all
 									</button>
 								)}
@@ -303,7 +287,6 @@ const MainConent = ({ groups = [], loading, error, hasSearch, onSelect, traveler
 							)}
 
 							<div className="filter-card-body">
-
 								<FilterSection
 									id="departure"
 									title="Departure time"
@@ -538,14 +521,12 @@ const MainConent = ({ groups = [], loading, error, hasSearch, onSelect, traveler
 										})}
 									</ul>
 								</FilterSection>
-
 							</div>
 						</div>
 					</Col>
 
 					{/* ============== RESULTS ============== */}
 					<div className="col-xl-9 col-lg-8 col-md-12">
-
 						<div className="row align-items-center justify-content-between">
 							<div className="col-xl-4 col-lg-4 col-md-4">
 								<h5 className="fw-bold fs-6 mb-lg-0 mb-3">
@@ -585,7 +566,6 @@ const MainConent = ({ groups = [], loading, error, hasSearch, onSelect, traveler
 						</div>
 
 						<div className="row align-items-center g-4 mt-2">
-
 							<div className="col-xl-12 col-md-12">
 								<div className="fare-calendar" id="fareCalendar"></div>
 							</div>
@@ -606,7 +586,7 @@ const MainConent = ({ groups = [], loading, error, hasSearch, onSelect, traveler
 							{!loading && !error && !hasSearch && (
 								<div className="col-12">
 									<div className="alert alert-info mb-0">
-										Start a search from the home page to see available flights.
+										Start a search from the dashboard to see available flights.
 									</div>
 								</div>
 							)}
@@ -625,6 +605,7 @@ const MainConent = ({ groups = [], loading, error, hasSearch, onSelect, traveler
 									offer={offer}
 									onSelect={onSelect}
 									travelers={travelers}
+									admin={admin}
 								/>
 							))}
 
@@ -691,10 +672,8 @@ const MainConent = ({ groups = [], loading, error, hasSearch, onSelect, traveler
 									</div>
 								</div>
 							)}
-
 						</div>
 					</div>
-
 				</Row>
 			</Container>
 		</section>

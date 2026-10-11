@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import './assets/scss/style.scss';
 import "./assets/css/bootstrap-icons.css";
 import "./assets/css/fontawesome.css";
@@ -39,8 +39,30 @@ const Settings = lazy(() => import('./pages/Profile/Settings'));
 const DeleteAccount = lazy(() => import('./pages/Profile/DeleteAccount'));
 import FlightBooking from './pages/Flights/FlightBooking';
 import BookingSuccess from './pages/Flights/BookingSuccess';
+import Dashboard from './pages/Admin/Dashboard';
+import RequireAuth from './components/Auth/RequireAuth';
+import { Outlet } from 'react-router-dom';
+import AdminLayout from './components/Admin/AdminLayout';
+
+import Users from './pages/Admin/Users';
+import Permissions from './pages/Admin/Permissions';
+import FlightData from './pages/Admin/FlightData';
+import Markup from './pages/Admin/Markup';
+import Testimonial from './pages/Admin/Testimonial';
+import Category from './pages/Admin/Category';
+import Advert from './pages/Admin/Advert';
+import Leads from './pages/Admin/Leads';
+import BlogCategory from './pages/Admin/BlogCategory';
+import Blog from './pages/Admin/Blog';
+import Profile from './pages/Admin/Profile';
 
 // inside your <Routes>
+
+// const AdminLayout = () => (
+// 	<RequireAuth>
+// 		<Outlet />
+// 	</RequireAuth>
+// );
 
 
 // Loading fallback component
@@ -57,6 +79,9 @@ function App() {
       <Routes>
       {/* Landing Page with Layout (Header & Footer) */}
       <Route path="/" element={<LandingPage />} />
+
+
+      {/* <Route path="/admin/dashboard" element={<Dashboard />} /> */}
 
       <Route path="/flights" element={<FlightList01 />} />
       <Route path="/flight-list-02" element={<FlightList02 />} />
@@ -81,7 +106,7 @@ function App() {
 
       <Route path="/classic-blog" element={<ClassicBlog />} />
       <Route path="/blog" element={<GridBlog />} />
-      <Route path="/blog-detail" element={<BlogDetail />} />
+      <Route path="/blog/:slug" element={<BlogDetail />} />
       
       {/* Auth Pages without Layout */}
       <Route path="/login" element={<Login />} />
@@ -98,6 +123,27 @@ function App() {
       <Route path="/privacy-policy" element={<PrivacyPolicy />} />
       <Route path="/contact-us" element={<Contactv1 />} />
       <Route path="/contact-v2" element={<Contactv2 />} />
+
+      {/* ---------- admin (guarded by AdminLayout) ---------- */}
+      <Route path="/admin" element={<AdminLayout />}>
+        <Route index element={<Navigate to="dashboard" replace />} />
+        <Route path="dashboard" element={<Dashboard />} />
+        <Route path="flights" element={<FlightList01 admin />} />
+        <Route path="flights/book/:id" element={<FlightBooking admin />} />
+        <Route path="users"         element={<Users />} />
+        <Route path="permissions"   element={<Permissions />} />
+        <Route path="flight-data"   element={<FlightData />} />
+        <Route path="markup"        element={<Markup />} />
+        <Route path="testimonial"   element={<Testimonial />} />
+        <Route path="category"      element={<Category />} />
+        <Route path="advert"        element={<Advert />} />
+        <Route path="leads"         element={<Leads />} />
+        <Route path="blog-category" element={<BlogCategory />} />
+        <Route path="blog"          element={<Blog />} />
+        <Route path="profile"       element={<Profile />} />
+      </Route>
+
+      <Route path="*" element={<Navigate to="/" replace />} />
 
 
       </Routes>

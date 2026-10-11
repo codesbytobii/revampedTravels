@@ -26,7 +26,6 @@ const formatDuration = (iso) => {
 	return [m[1] && `${m[1]}h`, m[2] && `${m[2]}m`].filter(Boolean).join(' ');
 };
 
-/* ---------- Traveler composition ---------- */
 const buildTravelerSlots = (travelers, { includeInfants = false } = {}) => {
 	if (!travelers) return [{ type: 'ADULT' }];
 	const slots = [];
@@ -49,7 +48,6 @@ const typeBadgeClass = (t) =>
 const travelerTypeFor = (t) =>
 	t === 'ADULT' ? 'ADULT' : t === 'CHILD' ? 'CHILD' : 'HELD_INFANT';
 
-/* ---------- Deep-set helper ---------- */
 const setDeepValue = (obj, path, value) => {
 	const keys = path.split(/\.|\[(\d+)\]/).filter(Boolean);
 	const next = { ...obj };
@@ -66,7 +64,6 @@ const setDeepValue = (obj, path, value) => {
 	return next;
 };
 
-/* ---------- Status modal ---------- */
 const StatusModal = ({ show, onClose, variant = 'info', title, message, children, actionLabel, onAction, busy }) => {
 	const iconClass =
 		variant === 'success' ? 'bi-check-circle-fill text-success' :
@@ -108,7 +105,6 @@ const StatusModal = ({ show, onClose, variant = 'info', title, message, children
 	);
 };
 
-/* ---------- Passenger factory ---------- */
 const emptyPassenger = (type = 'ADULT', id = '1') => ({
 	id,
 	travelerType: travelerTypeFor(type),
@@ -141,7 +137,6 @@ const emptyPassenger = (type = 'ADULT', id = '1') => ({
 	],
 });
 
-/* ---------- Itinerary review ---------- */
 const ItineraryReview = ({ offer }) => {
 	const rawItineraries = offer.raw?.itineraries || [];
 	return (
@@ -190,7 +185,6 @@ const ItineraryReview = ({ offer }) => {
 	);
 };
 
-/* ---------- Passenger form ---------- */
 const PassengerForm = ({ index, value, onChange, errors, adultsCount }) => {
 	const set = (field, v) => onChange(index, field, v);
 	const isInfant = value.travelerType === 'HELD_INFANT';
@@ -328,15 +322,13 @@ const PassengerForm = ({ index, value, onChange, errors, adultsCount }) => {
 	);
 };
 
-/* ================= PAGE ================= */
-const FlightBooking = () => {
+const FlightBooking = ({ admin = false }) => {
 	const { state } = useLocation();
 	const navigate = useNavigate();
 
 	const offerFromState = state?.offer;
 	const travelers = state?.travelers;
 
-	// Fallback to localStorage
 	const offer = useMemo(() => {
 		if (offerFromState) return offerFromState;
 		try {
@@ -346,10 +338,11 @@ const FlightBooking = () => {
 	}, [offerFromState]);
 
 	useEffect(() => {
-		if (!offer) navigate('/flights', { replace: true });
-	}, [offer, navigate]);
+		if (!offer) {
+			navigate(admin ? '/admin/flights' : '/flights', { replace: true });
+		}
+	}, [offer, navigate, admin]);
 
-	// Passenger slots
 	const slots = useMemo(
 		() => buildTravelerSlots(travelers, { includeInfants: false }),
 		[travelers]
@@ -362,7 +355,6 @@ const FlightBooking = () => {
 	const [errors, setErrors] = useState(slots.map(() => ({})));
 	const [submitting, setSubmitting] = useState(false);
 
-	// Modal state
 	const [modal, setModal] = useState({
 		show: false,
 		variant: 'info',
@@ -375,16 +367,13 @@ const FlightBooking = () => {
 	const closeModal = () => setModal(m => ({ ...m, show: false, actionLabel: null, onAction: null, busy: false }));
 	const openModal = (config) => setModal({ ...config, show: true });
 
-	// Reset passengers when traveler mix changes
 	useEffect(() => {
 		setPassengers(slots.map((s, i) => emptyPassenger(s.type, String(i + 1))));
 		setErrors(slots.map(() => ({})));
 	}, [slots]);
 
-	// Currency formatter
 	const fmt = (amount) => formatPrice(Number(amount || 0), offer?.currency || 'NGN');
 
-	// Price per traveler
 	const travelerBreakdown = useMemo(() => {
 		const raw = offer?.raw || {};
 		const pricing = raw.travelerPricings || [];
@@ -410,7 +399,6 @@ const FlightBooking = () => {
 
 	if (!offer) return null;
 
-	/* ---------- Validation ---------- */
 	const validate = () => {
 		const errs = passengers.map(p => {
 			const e = {};
@@ -429,7 +417,6 @@ const FlightBooking = () => {
 		return errs.every(e => Object.keys(e).length === 0);
 	};
 
-	/* ---------- Submit flow ---------- */
 	const handleSubmit = async (e) => {
 		e?.preventDefault?.();
 		if (submitting) return;
@@ -441,7 +428,6 @@ const FlightBooking = () => {
 				variant: 'warning',
 				title: 'Missing information',
 				message: 'Please fill in all required fields highlighted in the form.',
-				actionLabel: null,
 			});
 			return;
 		}
@@ -450,7 +436,6 @@ const FlightBooking = () => {
 		localStorage.setItem('passengerInfo', JSON.stringify(passengers));
 
 		try {
-			// 1) Initiate payment
 			const payment = await initiatePayment({
 				email: passengers[0].contact.emailAddress,
 				amount: travelerBreakdown.total,
@@ -463,12 +448,20 @@ const FlightBooking = () => {
 
 			if (!accessCode) throw new Error('No Paystack access code received.');
 
-			// 2) Open Paystack
+			if (typeof window.PaystackPop !== 'function') {
+				setSubmitting(false);
+				openModal({
+					variant: 'error',
+					title: 'Payment unavailable',
+					message: 'The payment library failed to load. Please refresh the page and try again.',
+				});
+				return;
+			}
+
 			const popup = new window.PaystackPop();
 
 			popup.resumeTransaction(accessCode, {
 				onSuccess: async () => {
-					// Show processing modal
 					openModal({
 						variant: 'info',
 						title: 'Processing your booking…',
@@ -477,7 +470,6 @@ const FlightBooking = () => {
 					});
 
 					try {
-						// 3) Verify payment
 						const verification = await verifyPayment({ reference, amount });
 						if (!verification?.success) {
 							setSubmitting(false);
@@ -489,22 +481,20 @@ const FlightBooking = () => {
 							return;
 						}
 
-						// 4) Book the flight
 						const payload = buildBookingPayload({
 							flightDetails: offer.raw,
 							travelers: passengers,
 						});
 						await bookFlight(payload);
 
-						// 5) Success modal
 						openModal({
 							variant: 'success',
 							title: 'Booking confirmed!',
-							message: `Your flight has been booked. A copy of your e-ticket will be sent to your email shortly. Reference: ${reference}`,
-							actionLabel: 'Go to home',
+							message: `Your flight has been booked. Reference: ${reference}`,
+							actionLabel: 'Go to dashboard',
 							onAction: () => {
 								closeModal();
-								navigate('/');
+								navigate(admin ? '/admin/dashboard' : '/');
 							},
 						});
 					} catch (err) {
@@ -512,7 +502,7 @@ const FlightBooking = () => {
 						openModal({
 							variant: 'error',
 							title: 'Booking failed',
-							message: err.message || 'Your payment was received but the flight could not be booked. Please contact support.',
+							message: err.message || 'Your payment was received but the flight could not be booked.',
 						});
 					} finally {
 						setSubmitting(false);
@@ -547,17 +537,16 @@ const FlightBooking = () => {
 		}
 	};
 
-	return (
-		<Layout>
-			<Header />
+	const content = (
+		<>
+			{!admin && <Header />}
 
-			<section className="gray-simple py-5">
+			<section className={admin ? 'admin-flight-booking' : 'gray-simple py-5'}>
 				<Container>
 					<Row className="g-4">
 						<Col xl={8} lg={7}>
 							<ItineraryReview offer={offer} />
 
-							{/* Traveler summary */}
 							<div className="booking-card bg-white rounded-3 p-4 mb-4">
 								<h5 className="fw-bold mb-3">Travelers</h5>
 								<div className="d-flex flex-wrap gap-3">
@@ -583,7 +572,6 @@ const FlightBooking = () => {
 								</div>
 							</div>
 
-							{/* Passenger forms */}
 							<form onSubmit={handleSubmit}>
 								{passengers.map((p, i) => (
 									<PassengerForm
@@ -596,7 +584,6 @@ const FlightBooking = () => {
 									/>
 								))}
 
-								{/* Mobile pay button */}
 								<button
 									type="submit"
 									className="btn btn-primary w-100 fw-medium d-lg-none mb-4"
@@ -667,7 +654,10 @@ const FlightBooking = () => {
 									)}
 								</button>
 
-								<Link to="/flights" className="btn btn-link w-100 mt-2 text-muted">
+								<Link
+									to={admin ? '/admin/flights' : '/flights'}
+									className="btn btn-link w-100 mt-2 text-muted"
+								>
 									Back to results
 								</Link>
 							</div>
@@ -676,7 +666,6 @@ const FlightBooking = () => {
 				</Container>
 			</section>
 
-			{/* ---------- Status modal ---------- */}
 			<StatusModal
 				show={modal.show}
 				onClose={closeModal}
@@ -687,8 +676,10 @@ const FlightBooking = () => {
 				onAction={modal.onAction}
 				busy={modal.busy}
 			/>
-		</Layout>
+		</>
 	);
+
+	return admin ? content : <Layout>{content}</Layout>;
 };
 
 export default FlightBooking;

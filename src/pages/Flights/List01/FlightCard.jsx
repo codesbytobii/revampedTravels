@@ -31,7 +31,6 @@ const formatDuration = (iso) => {
 	return [m[1] && `${m[1]}h`, m[2] && `${m[2]}m`].filter(Boolean).join(' ');
 };
 
-/* ---------- Itinerary row (collapsed view) ---------- */
 const ItineraryRow = ({ it, withTopMargin }) => (
 	<div className={`row ${withTopMargin ? 'mt-4' : ''}`}>
 		<div className="col-xl-12 col-lg-12 col-md-12">
@@ -85,7 +84,6 @@ const ItineraryRow = ({ it, withTopMargin }) => (
 	</div>
 );
 
-/* ---------- Expanded details for one itinerary ---------- */
 const ItineraryDetails = ({ itinerary, raw, fareDetails }) => {
 	const segments = raw?.segments || [];
 
@@ -201,7 +199,6 @@ const ItineraryDetails = ({ itinerary, raw, fareDetails }) => {
 	);
 };
 
-/* ---------- One leg accordion ---------- */
 const LegAccordion = ({ itinerary, raw, fareDetails, defaultOpen }) => {
 	const [open, setOpen] = useState(!!defaultOpen);
 	return (
@@ -233,8 +230,7 @@ const LegAccordion = ({ itinerary, raw, fareDetails, defaultOpen }) => {
 	);
 };
 
-/* ---------- FlightCard ---------- */
-const FlightCard = ({ offer, onSelect, travelers }) => {
+const FlightCard = ({ offer, onSelect, travelers, admin = false }) => {
 	const [expanded, setExpanded] = useState(false);
 	const [confirming, setConfirming] = useState(false);
 	const [confirmError, setConfirmError] = useState('');
@@ -269,13 +265,12 @@ const FlightCard = ({ offer, onSelect, travelers }) => {
 
 			setConfirming(false);
 
-			navigate(`/flights/book/${offer.id}`, {
-				state: {
-					offer,
-					travelers,
-					bookingRequirements,
-					hasOnlyRequiredKeys,
-				},
+			const path = admin
+				? `/admin/flights/book/${offer.id}`
+				: `/flights/book/${offer.id}`;
+
+			navigate(path, {
+				state: { offer, travelers, bookingRequirements, hasOnlyRequiredKeys },
 			});
 		} catch (err) {
 			console.error(err);

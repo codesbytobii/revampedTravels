@@ -65,6 +65,9 @@ const SignInModal = ({ show, handleClose, handleSwitchToRegister }) => {
 			let data;
 			try { data = JSON.parse(text); } catch { data = null; }
 
+			// const data = await res.json();
+console.log('LOGIN RESPONSE:', data);
+
 			if (!res.ok) {
 				// Try to surface a server-provided message first
 				const msg =
@@ -113,7 +116,7 @@ const SignInModal = ({ show, handleClose, handleSwitchToRegister }) => {
 			handleClose?.();
 
 			// Optional redirect — remove if you stay on the page
-			// navigate('/');
+			navigate('/admin/dashboard');
 		} catch (err) {
 			console.error('Sign in error:', err);
 			setServerError('Network error. Please check your connection and try again.');

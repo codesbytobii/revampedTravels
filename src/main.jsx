@@ -8,6 +8,14 @@ import './styles/layout.css'
 import './styles/auth.css'
 import './index.css'
 import App from './App.jsx'
+import './assets/css/admin.css';
+import 'tinymce/tinymce';
+import 'tinymce/icons/default';
+import 'tinymce/themes/silver';
+import 'tinymce/models/dom';
+import 'tinymce/skins/ui/oxide/skin.min.css';
+import 'tinymce/plugins/advlist';
+
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

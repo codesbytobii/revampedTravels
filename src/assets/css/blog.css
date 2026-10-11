@@ -1,0 +1,51 @@
+/* =========================================================
+   Blog content typography
+   Styles the raw HTML returned in post_content.
+   ========================================================= */
+.blog-content {
+	font-size: 1rem;
+	line-height: 1.75;
+	color: #374151;
+}
+.blog-content h1,
+.blog-content h2,
+.blog-content h3 {
+	color: #0f1115;
+	font-weight: 700;
+	letter-spacing: -0.015em;
+	line-height: 1.25;
+	margin-top: 2rem;
+	margin-bottom: 1rem;
+}
+.blog-content h2 { font-size: 1.4rem; }
+.blog-content h3 { font-size: 1.2rem; }
+.blog-content p { margin-bottom: 1rem; }
+.blog-content strong { color: #0f1115; }
+.blog-content ul,
+.blog-content ol {
+	padding-left: 1.25rem;
+	margin-bottom: 1rem;
+}
+.blog-content li { margin-bottom: .5rem; }
+.blog-content hr {
+	margin: 2rem 0;
+	border: 0;
+	border-top: 1px solid #e5e7eb;
+}
+.blog-content img {
+	max-width: 100%;
+	height: auto;
+	border-radius: 8px;
+	margin: 1rem 0;
+}
+.blog-content a {
+	color: #d33;
+	text-decoration: underline;
+}
+.blog-content blockquote {
+	border-left: 3px solid #d33;
+	padding: .5rem 1rem;
+	background: #fdf4f4;
+	margin: 1.25rem 0;
+	color: #4b5563;
+}

@@ -11,7 +11,7 @@ import {
 	normalizeOffers,
 } from '../../Landing2/utils/flights';
 
-const FlightList01 = () => {
+const FlightList01 = ({ admin = false }) => {
 	const { state } = useLocation();
 	const navigate = useNavigate();
 	const initialSearch = state?.search;
@@ -81,16 +81,17 @@ const FlightList01 = () => {
 
 	const handleSearch = useCallback((nextSearch) => {
 		setSearch(nextSearch);
-		navigate('/flights', { state: { search: nextSearch }, replace: true });
-	}, [navigate]);
+		const path = admin ? '/admin/flights' : '/flights';
+		navigate(path, { state: { search: nextSearch }, replace: true });
+	}, [navigate, admin]);
 
 	const handleSelect = (offer) => {
 		console.log('Selected offer:', offer.raw);
 	};
 
-	return (
-		<Layout>
-			<Header search={search} onSearch={handleSearch} />
+	const content = (
+		<>
+			{!admin && <Header search={search} onSearch={handleSearch} />}
 			<MainConent
 				groups={groups}
 				loading={loading}
@@ -98,9 +99,12 @@ const FlightList01 = () => {
 				hasSearch={!!search}
 				onSelect={handleSelect}
 				travelers={search?.travelers}
+				admin={admin}
 			/>
-		</Layout>
+		</>
 	);
+
+	return admin ? content : <Layout>{content}</Layout>;
 };
 
 export default FlightList01;

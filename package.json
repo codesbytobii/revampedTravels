@@ -10,13 +10,16 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@tinymce/tinymce-react": "^6.3.0",
+    "axios": "^1.20.0",
     "bootstrap": "^5.3.8",
     "react": "^19.1.1",
     "react-bootstrap": "^2.10.10",
     "react-dom": "^19.1.1",
     "react-flatpickr": "^4.0.11",
     "react-router-dom": "^7.9.5",
-    "swiper": "^14.3.0"
+    "swiper": "^14.3.0",
+    "tinymce": "^8.9.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",
