@@ -6,7 +6,7 @@ import bgTitle from "assets/img/bg-title.jpg";
 import joinus from "assets/img/joinus.png";
 import Reviews from "./Landing2/components/Reviews";
 import Facts from "./AboutUs/Facts";
-import Memories from "./Landing2/components/Memories";
+// import Memories from "./Landing2/components/Memories";
 import NewsletterCTA from "./Landing2/components/NewsletterCTA";
 import { Col } from "react-bootstrap";
 import { Link } from "react-router-dom";
@@ -141,7 +141,7 @@ const JoinUs = () => {
             </section>
             <Reviews />
             <Facts />
-            <Memories />
+            {/* <Memories /> */}
             <section className="pt-0">
 			<div className="container">
 				<div className="row align-items-center justify-content-between">

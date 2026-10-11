@@ -1,6 +1,6 @@
 import { Col, Container, Row } from 'react-bootstrap';
 import Layout from '../components/Layout/Layout';
-import { getImgUrl } from './Landing22/utils/asset';
+import { getImgUrl } from './Landing2/utils/asset';
 // import NewsletterCTA from './Landing2/components/NewsletterCTA';
 
 
