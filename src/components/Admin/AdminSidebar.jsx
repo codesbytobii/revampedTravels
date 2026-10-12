@@ -4,9 +4,9 @@ import { logout } from '../../utils/auth';
 
 const NAV_ITEMS = [
 	{ to: '/admin/dashboard',     icon: 'bi-grid-1x2',          label: 'Dashboard' },
-	{ to: '/admin/flights',       icon: 'bi-airplane-engines',  label: 'Flight Search' },
+	// { to: '/admin/flights',       icon: 'bi-airplane-engines',  label: 'Flight Search' },
 	{ to: '/admin/users',         icon: 'bi-person-plus',       label: 'Users' },
-	{ to: '/admin/permissions',   icon: 'bi-shield-lock',       label: 'Permissions' },
+	// { to: '/admin/permissions',   icon: 'bi-shield-lock',       label: 'Permissions' },
 	{ to: '/admin/flight-data',   icon: 'bi-file-earmark-text', label: 'Flight Data' },
 	{ to: '/admin/markup',        icon: 'bi-currency-exchange', label: 'Markup' },
 	{ to: '/admin/testimonial',   icon: 'bi-chat-square-quote', label: 'Testimonial' },
@@ -15,7 +15,7 @@ const NAV_ITEMS = [
 	{ to: '/admin/leads',         icon: 'bi-megaphone-fill',    label: 'Leads' },
 	{ to: '/admin/blog-category', icon: 'bi-journal-text',      label: 'BlogCategory' },
 	{ to: '/admin/blog',          icon: 'bi-journal-richtext',  label: 'Blog' },
-	{ to: '/admin/profile',       icon: 'bi-person-circle',     label: 'Profile' },
+	// { to: '/admin/profile',       icon: 'bi-person-circle',     label: 'Profile' },
 ];
 
 const AdminSidebar = ({ open = false, onClose }) => {

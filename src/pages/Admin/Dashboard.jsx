@@ -482,9 +482,9 @@ const Dashboard = () => {
 			subtitle="Here's what's happening across your bookings."
 			actions={
 				<>
-					<Link to="/admin/flights" className="dash-btn dash-btn--ghost">
+					{/* <Link to="/admin/flights" className="dash-btn dash-btn--ghost">
 						<i className="bi bi-search me-2"></i>Search flights
-					</Link>
+					</Link> */}
 					<Link to="/admin/flight-data" className="dash-btn dash-btn--solid">
 						<i className="bi bi-ticket-perforated me-2"></i>Flight data
 					</Link>

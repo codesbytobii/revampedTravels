@@ -6,9 +6,9 @@ import { logout } from '../../utils/auth';
 
 const NAV_FOR_TITLE = {
 	'/admin/dashboard':     'Dashboard',
-	'/admin/flights':       'Flight Search',
+	// '/admin/flights':       'Flight Search',
 	'/admin/users':         'Users',
-	'/admin/permissions':   'Permissions',
+	// '/admin/permissions':   'Permissions',
 	'/admin/flight-data':   'Flight Data',
 	'/admin/markup':        'Markup',
 	'/admin/testimonial':   'Testimonial',
@@ -17,7 +17,7 @@ const NAV_FOR_TITLE = {
 	'/admin/leads':         'Leads',
 	'/admin/blog-category': 'Blog Category',
 	'/admin/blog':          'Blog',
-	'/admin/profile':       'Profile',
+	// '/admin/profile':       'Profile',
 };
 
 const pageTitleFor = (pathname) => {
