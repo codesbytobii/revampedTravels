@@ -24,7 +24,6 @@ const Pricing = lazy(() => import('./pages/Pricing'));
 const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
 const Contactv1 = lazy(() => import('./pages/Contact/Contactv1'));
 const Contactv2 = lazy(() => import('./pages/Contact/Contactv2'));
-const JoinUs = lazy(() => import('./pages/JoinUs'));
 const BookingPage = lazy(() => import('./pages/BookingPage'));
 const BookingPage2 = lazy(() => import('./pages/BookingPage2'));
 const BookingPage3 = lazy(() => import('./pages/Bookingpage03'));
@@ -98,8 +97,6 @@ function App() {
       <Route path="/settings" element={<Settings />} />
       <Route path="/delete-account" element={<DeleteAccount />} />
 
-      {/* <Route path="/compare-listing" element={<CompareListing />} /> */}
-      <Route path="/join-us" element={<JoinUs />} />
       <Route path="/booking-page" element={<BookingPage />} />
       <Route path="/bookingpage-02" element={<BookingPage2 />} />
       <Route path="/bookingpage-03" element={<BookingPage3 />} />
