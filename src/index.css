@@ -2377,3 +2377,36 @@
 	overflow: hidden;
 }
 
+/* Airlines we ticket for — 3-column grid that wraps */
+.footer-airlines {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 12px 14px;
+	align-items: center;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+.footer-airlines li {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 38px;
+}
+
+.footer-airlines img {
+	max-width: 100%;
+	max-height: 32px;
+	width: auto;
+	height: auto;
+	object-fit: contain;
+	display: block;
+	opacity: 0.85;
+	transition: opacity .15s ease, transform .15s ease;
+}
+
+.footer-airlines li:hover img {
+	opacity: 1;
+	transform: scale(1.05);
+}
