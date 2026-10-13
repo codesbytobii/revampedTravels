@@ -147,7 +147,7 @@ function Footer({ footerMode }) {
 										<img src={goibibo} alt="Goibibo" />
 									</li>
 								</ul>
-							</div>
+ 							</div>
 						</div>
 
 					</div>

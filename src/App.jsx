@@ -14,16 +14,13 @@ const TwoFactor = lazy(() => import('./pages/Auth/TwoFactor'));
 const FlightList01 = lazy(() => import('./pages/Flights/List01'));
 const FlightList02 = lazy(() => import('./pages/Flights/List02'));
 const FlightDetails = lazy(() => import('./pages/Flights/Details'));
-const ClassicBlog = lazy(() => import('./pages/Blog/ClassicBlog'));
 const GridBlog = lazy(() => import('./pages/Blog/GridBlog'));
 const BlogDetail = lazy(() => import('./pages/Blog/BlogDetail'));
 const AboutUs = lazy(() => import('./pages/AboutUs'));
-const Faq = lazy(() => import('./pages/Faq'));
 const NotFound = lazy(() => import('./pages/404'));
 const Pricing = lazy(() => import('./pages/Pricing'));
 const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
 const Contactv1 = lazy(() => import('./pages/Contact/Contactv1'));
-const Contactv2 = lazy(() => import('./pages/Contact/Contactv2'));
 const BookingPage = lazy(() => import('./pages/BookingPage'));
 const BookingPage2 = lazy(() => import('./pages/BookingPage2'));
 const BookingPage3 = lazy(() => import('./pages/Bookingpage03'));
@@ -101,7 +98,6 @@ function App() {
       <Route path="/bookingpage-02" element={<BookingPage2 />} />
       <Route path="/bookingpage-03" element={<BookingPage3 />} />
 
-      <Route path="/classic-blog" element={<ClassicBlog />} />
       <Route path="/blog" element={<GridBlog />} />
       <Route path="/blog/:slug" element={<BlogDetail />} />
       
@@ -114,12 +110,10 @@ function App() {
       <Route path="/about-us" element={<AboutUs />} />
       {/* <Route path="/career-page" element={<CareerPage />} /> */}
       {/* <Route path="/help-center" element={<HelpCenter />} /> */}
-      <Route path="/faq" element={<Faq />} />
       <Route path="/404" element={<NotFound />} />
       <Route path="/pricing" element={<Pricing />} />
       <Route path="/privacy-policy" element={<PrivacyPolicy />} />
       <Route path="/contact-us" element={<Contactv1 />} />
-      <Route path="/contact-v2" element={<Contactv2 />} />
 
       {/* ---------- admin (guarded by AdminLayout) ---------- */}
       <Route path="/admin" element={<AdminLayout />}>
