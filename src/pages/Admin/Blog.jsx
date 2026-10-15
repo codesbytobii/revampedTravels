@@ -7,8 +7,8 @@ import AdminPageShell from '../../components/Admin/AdminPageShell';
 import { getToken } from '../../utils/auth';
 
 /* 🔧 Real API base + media prefix */
-const BASE_URL  = 'https://travels.ffsdgroup.com/api';
-const MEDIA_URL = 'https://travels.ffsdgroup.com/storage';
+const BASE_URL  = 'https://test-travels.maypaspace.com/api';
+const MEDIA_URL = 'https://test-travels.maypaspace.com/storage';
 
 const TINYMCE_KEY = 'owhix8rdfvcdc0l3oxqpy11lqmvorndyyj1jgbcdhpjijgh4';
 

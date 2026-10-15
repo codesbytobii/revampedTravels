@@ -15,8 +15,7 @@ function Contactv1() {
                             <div className="fpc-capstion text-center my-4">
                                 <div className="fpc-captions">
                                     <h1 className="xl-heading text-light">Get-in Touch</h1>
-                                    <p className="text-light">Cicero famously orated against his political opponent Lucius Sergius Catilina.
-                                        Occasionally the first Oration against Catiline is taken for type specimens</p>
+                                    <p className="text-light">Reach us at any of our offices below.</p>
                                 </div>
                             </div>
 

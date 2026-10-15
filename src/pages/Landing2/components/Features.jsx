@@ -8,8 +8,8 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 
 /* 🔧 Real API base + media prefix */
-const API_URL   = 'https://travels.ffsdgroup.com/api';
-const MEDIA_URL = 'https://travels.ffsdgroup.com/storage';
+const API_URL   = 'https://test-travels.maypaspace.com/api';
+const MEDIA_URL = 'https://test-travels.maypaspace.com/storage';
 
 const FALLBACK_IMG =
 	'https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=800&q=70';

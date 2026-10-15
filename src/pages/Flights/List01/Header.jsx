@@ -3,7 +3,7 @@ import { Container } from 'react-bootstrap';
 import Flatpickr from 'react-flatpickr';
 import { useNavigate } from 'react-router-dom';
 
-const AIRPORT_API = 'https://travels.ffsdgroup.com/api/flight/search/city';
+const AIRPORT_API = 'https://test-travels.maypaspace.com/api/flight/search/city';
 const FLIGHT_LIST_PATH = '/flights';
 
 const CLASS_OPTIONS = [

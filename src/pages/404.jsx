@@ -12,10 +12,10 @@ function NotFound() {
 
                             <div className="404-capstion text-center my-4">
                                 <div className="404-captions">
-                                    <img src={notfound} className="img-fluid mb-3" alt="" />
-                                        <h1 className="display-1 fw-bold mb-0">404</h1>
-                                        <h2>Ohhh ho, something went wrong!</h2>
-                                        <p className="fs-6">Cicero famously orated against his political opponent.</p>
+                                    <img src={notfound} className="img-fluid mb-3" alt="" width={100} />
+                                    <h1 className="display-1 fw-bold mb-0">404</h1>
+                                    <h2>Page not found</h2>
+                                    <p className="fs-6">Cicero famously orated against his political opponent.</p>
                                 </div>
                             </div>
 

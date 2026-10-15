@@ -5,7 +5,7 @@ import AdminPageShell from '../../components/Admin/AdminPageShell';
 import { getToken } from '../../utils/auth';
 
 /* 🔧 Real API base */
-const BASE_URL = 'https://travels.ffsdgroup.com/api';
+const BASE_URL = 'https://test-travels.maypaspace.com/api';
 
 /* =========================================================
    Date range helpers

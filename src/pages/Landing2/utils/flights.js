@@ -1,11 +1,15 @@
 // src/utils/flights.js
-const OFFER_API = 'https://travels.ffsdgroup.com/api/flight/search/offer';
-const PRICE_API = 'https://travels.ffsdgroup.com/api/flight/price/confirm';
+const OFFER_API = '/api/flight/search/offer';
+const PRICE_API = '/api/flight/price/confirm';
 
-const CONFIRM_TOKEN_KEY = 'confirmPriceToken';
-const PAY_TOKEN_KEY     = 'payToken';
+/* ---------- Storage keys ---------- */
+const CONFIRM_TOKEN_KEY    = 'confirmPriceToken';
+const PAY_TOKEN_KEY        = 'payToken';
+const AMA_REF_KEY          = 'amaClientRef';
+const IDEMPOTENCY_KEY      = 'idempotencyKey';
+const PAYMENT_REF_KEY      = 'paymentReference';
 
-/* ---------- Tokens ---------- */
+/* ---------- Tokens & refs ---------- */
 export const saveConfirmToken = (token) => {
 	if (token) localStorage.setItem(CONFIRM_TOKEN_KEY, token);
 };
@@ -16,6 +20,21 @@ export const savePayToken = (token) => {
 	if (token) localStorage.setItem(PAY_TOKEN_KEY, token);
 };
 export const getPayToken = () => localStorage.getItem(PAY_TOKEN_KEY);
+
+export const saveAmaRef = (ref) => {
+	if (ref) localStorage.setItem(AMA_REF_KEY, ref);
+};
+export const getAmaRef = () => localStorage.getItem(AMA_REF_KEY);
+
+export const saveIdempotencyKey = (key) => {
+	if (key) localStorage.setItem(IDEMPOTENCY_KEY, key);
+};
+export const getIdempotencyKey = () => localStorage.getItem(IDEMPOTENCY_KEY);
+
+export const savePaymentReference = (ref) => {
+	if (ref) localStorage.setItem(PAYMENT_REF_KEY, ref);
+};
+export const getPaymentReference = () => localStorage.getItem(PAYMENT_REF_KEY);
 
 /* ---------- Cabin map ---------- */
 export const CABIN_MAP = {
@@ -32,6 +51,17 @@ export const fmtDate = (d) => {
 	const m = String(dt.getMonth() + 1).padStart(2, '0');
 	const day = String(dt.getDate()).padStart(2, '0');
 	return `${dt.getFullYear()}-${m}-${day}`;
+};
+
+/* =========================================================
+   Capture the extra fields the API now returns alongside offers
+   ========================================================= */
+const captureRefs = (payload) => {
+	if (!payload) return;
+	if (payload.accessToken)       saveConfirmToken(payload.accessToken);
+	if (payload.ama_client_ref)    saveAmaRef(payload.ama_client_ref);
+	if (payload.idempotency_key)   saveIdempotencyKey(payload.idempotency_key);
+	if (payload.payment_reference) savePaymentReference(payload.payment_reference);
 };
 
 /* =========================================================
@@ -58,7 +88,7 @@ export const fetchOffers = async (params, signal) => {
 	if (!res.ok) throw new Error(`Request failed: ${res.status}`);
 	const data = await res.json();
 
-	if (data?.accessToken) saveConfirmToken(data.accessToken);
+	captureRefs(data);
 
 	return data;
 };
@@ -116,7 +146,7 @@ export const fetchMultiCityOffers = async (body, signal) => {
 	if (!res.ok) throw new Error(`Request failed: ${res.status}`);
 	const data = await res.json();
 
-	if (data?.accessToken) saveConfirmToken(data.accessToken);
+	captureRefs(data);
 
 	return data;
 };
@@ -130,6 +160,16 @@ export const confirmPrice = async (rawOffer) => {
 		throw new Error('Missing authorization token. Please search again.');
 	}
 
+	const amaRef = getAmaRef();
+	const idemKey = getIdempotencyKey();
+
+	const headers = {
+		'Content-Type': 'application/json',
+		Authorization: `Bearer ${token}`,
+	};
+	if (amaRef)  headers['ama_client_ref'] = amaRef;
+	if (idemKey) headers['Idempotency-Key'] = idemKey;
+
 	const payload = {
 		data: {
 			type: 'flight-offers-pricing',
@@ -139,10 +179,7 @@ export const confirmPrice = async (rawOffer) => {
 
 	const res = await fetch(PRICE_API, {
 		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-			Authorization: `Bearer ${token}`,
-		},
+		headers,
 		body: JSON.stringify(payload),
 	});
 
@@ -155,6 +192,9 @@ export const confirmPrice = async (rawOffer) => {
 		const msg = data?.message || `Price confirmation failed (${res.status})`;
 		throw new Error(msg);
 	}
+
+	// Fresh ama_client_ref / idempotency_key / payment_reference may come back
+	captureRefs(data);
 
 	return data;
 };
@@ -249,32 +289,71 @@ export const normalizeOffers = (payload) => {
 	});
 };
 
-
 /* =========================================================
    PAYMENT + BOOKING
    ========================================================= */
-const API_URL = 'https://travels.ffsdgroup.com/api'; // ← adjust if yours differs
+const API_URL = '/api';
 
-/* ---------- 1. Initiate payment ---------- */
-export const initiatePayment = async ({ email, amount, flightOrderId }) => {
-	const url = `${API_URL}/generate/payment?paid_by_email=${encodeURIComponent(email)}&amount=${amount}&flight_order_am_id=${flightOrderId}`;
-	const res = await fetch(url, {
+/* ---------- 1. Initiate payment ----------
+   Body (multipart/form-data): paid_by_email, paid_by_phone
+   Headers: ama_client_ref, Idempotency-Key
+   ------------------------------------------ */
+export const initiatePayment = async ({ email, phone, amount, flightOrderId }) => {
+	const amaRef = getAmaRef();
+	const idemKey = getIdempotencyKey();
+
+	if (!amaRef) throw new Error('Missing ama_client_ref. Please search again.');
+	if (!idemKey) throw new Error('Missing idempotency key. Please search again.');
+
+	const fd = new FormData();
+	fd.append('paid_by_email', email || '');
+	if (phone) fd.append('paid_by_phone', phone);
+	if (amount != null) fd.append('amount', String(amount));
+	if (flightOrderId != null) fd.append('flight_order_am_id', String(flightOrderId));
+
+	const headers = {
+		Accept: 'application/json',
+		ama_client_ref: amaRef,
+		'Idempotency-Key': idemKey,
+	};
+
+	const res = await fetch(`${API_URL}/generate/payment`, {
 		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
+		headers,
+		body: fd,
 	});
-	if (!res.ok) throw new Error(`Payment initiation failed (${res.status})`);
-	return res.json(); // { access_code, reference, payment: { amount } }
+
+	const text = await res.text();
+	let data;
+	try { data = JSON.parse(text); } catch { data = null; }
+
+	if (!res.ok) {
+		console.error('Payment initiation failed:', res.status, text);
+		const msg = data?.message || `Payment initiation failed (${res.status})`;
+		throw new Error(msg);
+	}
+
+	if (data?.payment_reference) savePaymentReference(data.payment_reference);
+
+	return data;
 };
 
 /* ---------- 2. Verify payment ---------- */
 export const verifyPayment = async ({ reference, amount }) => {
-	const url = `${API_URL}?reference=${encodeURIComponent(reference)}&amount=${encodeURIComponent(amount)}`;
+	const ref = reference || getPaymentReference();
+	if (!ref) throw new Error('Missing payment reference.');
+
+	const params = new URLSearchParams({ reference: ref });
+	if (amount != null) params.set('amount', String(amount));
+
+	const url = `${API_URL}/verify/payment?${params.toString()}`;
+
 	const res = await fetch(url, {
 		method: 'GET',
-		headers: { 'Content-Type': 'application/json' },
+		headers: { Accept: 'application/json' },
 	});
 	if (!res.ok) throw new Error(`Payment verification failed (${res.status})`);
-	return res.json(); // { success: boolean, ... }
+	return res.json();
 };
 
 /* ---------- 3. Book flight ---------- */
@@ -282,12 +361,19 @@ export const bookFlight = async (bookingData) => {
 	const token = getConfirmToken();
 	if (!token) throw new Error('Missing confirmPriceToken. Please search again.');
 
+	const amaRef = getAmaRef();
+	const idemKey = getIdempotencyKey();
+
+	const headers = {
+		'Content-Type': 'application/json',
+		Authorization: `Bearer ${token}`,
+	};
+	if (amaRef)  headers['ama_client_ref'] = amaRef;
+	if (idemKey) headers['Idempotency-Key'] = idemKey;
+
 	const res = await fetch(`${API_URL}/flight/book`, {
 		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-			Authorization: `Bearer ${token}`,
-		},
+		headers,
 		body: JSON.stringify(bookingData),
 	});
 

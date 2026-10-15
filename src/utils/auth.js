@@ -1,6 +1,6 @@
 // src/utils/auth.js
 
-const BASE_URL = 'https://test.ffsdtravels.com/api';
+const BASE_URL = 'https://test-travels.maypaspace.com/api';
 
 /* ---------- Token ---------- */
 export const getToken = () =>

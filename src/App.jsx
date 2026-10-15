@@ -134,7 +134,7 @@ function App() {
         <Route path="profile"       element={<Profile />} />
       </Route>
 
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="*" element={<NotFound />} />
 
 
       </Routes>

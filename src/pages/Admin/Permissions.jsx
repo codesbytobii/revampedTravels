@@ -4,7 +4,7 @@ import { Modal as BsModal, Row, Col } from 'react-bootstrap';
 import AdminPageShell from '../../components/Admin/AdminPageShell';
 
 /* 🔧 Change this to your real API base */
-const BASE_URL = 'https://travels.ffsdgroup.com/api';
+const BASE_URL = 'https://test-travels.maypaspace.com/api';
 
 /* ---------------- Helpers ---------------- */
 const formatDate = (dateString) => {

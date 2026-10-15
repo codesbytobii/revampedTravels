@@ -438,6 +438,7 @@ const FlightBooking = ({ admin = false }) => {
 		try {
 			const payment = await initiatePayment({
 				email: passengers[0].contact.emailAddress,
+				phone: passengers[0].contact.phones?.[0]?.number, 
 				amount: travelerBreakdown.total,
 				flightOrderId: offer.raw?.id || offer.id,
 			});
@@ -470,7 +471,7 @@ const FlightBooking = ({ admin = false }) => {
 					});
 
 					try {
-						const verification = await verifyPayment({ reference, amount });
+						const verification = await verifyPayment({ reference: payment.payment_reference || payment.reference, amount });
 						if (!verification?.success) {
 							setSubmitting(false);
 							openModal({

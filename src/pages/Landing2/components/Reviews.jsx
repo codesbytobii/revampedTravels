@@ -299,7 +299,7 @@ import team5 from '../../../assets/img/team-5.jpg';
 import { getImgUrl } from '../utils/asset';
 
 /* 🔧 Real API base */
-const BASE_URL = 'https://travels.ffsdgroup.com/api';
+const BASE_URL = 'https://test-travels.maypaspace.com/api';
 
 /* Local avatars used only if the API doesn't return an image */
 const FALLBACK_AVATARS = [team1, team2, team3, team4, team5];

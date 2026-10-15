@@ -1,6 +1,6 @@
 // src/utils/blogs.js
-const API_URL = 'https://travels.ffsdgroup.com/api';
-const MEDIA_URL = 'https://travels.ffsdgroup.com/storage';
+const API_URL = 'https://test-travels.maypaspace.com/api';
+const MEDIA_URL = 'https://test-travels.maypaspace.com/storage';
 
 /* ---------- Fetch helpers ---------- */
 export const fetchBlogs = async ({ page = 1 } = {}) => {

@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { fmtDate } from '../utils/flights';
 // import 'flatpickr/dist/themes/material_blue.css';
 
-const AIRPORT_API = 'https://travels.ffsdgroup.com/api/flight/search/city';
+const AIRPORT_API = 'https://test-travels.maypaspace.com/api/flight/search/city';
 const FLIGHT_LIST_PATH = '/flights'; // <- match the route of FlightList01 in your router
 
 const CLASS_OPTIONS = [

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Modal, Button, Form, Spinner, Alert } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 
-const LOGIN_URL = 'https://travels.ffsdgroup.com/api/admin/login';
+const LOGIN_URL = 'https://test-travels.maypaspace.com/api/admin/login';
 
 const SignInModal = ({ show, handleClose, handleSwitchToRegister }) => {
 	const navigate = useNavigate();
