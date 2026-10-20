@@ -51,6 +51,7 @@ import Leads from './pages/Admin/Leads';
 import BlogCategory from './pages/Admin/BlogCategory';
 import Blog from './pages/Admin/Blog';
 import Profile from './pages/Admin/Profile';
+import DestinationDetail from './pages/DestinationDetail/DestinationDetail';
 
 // inside your <Routes>
 
@@ -81,7 +82,7 @@ function App() {
 
       <Route path="/flights" element={<FlightList01 />} />
       <Route path="/flight-list-02" element={<FlightList02 />} />
-      <Route path="/flight-detail" element={<FlightDetails />} />
+      <Route path="/destination-detail/:slug" element={<DestinationDetail />} />
 
       <Route path="/flights/book/:id" element={<FlightBooking />} />
       <Route path="/booking-success" element={<BookingSuccess />} />

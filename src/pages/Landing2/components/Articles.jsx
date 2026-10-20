@@ -137,9 +137,9 @@ function Articles() {
 												className="article-media"
 												aria-label={a.title}
 											>
-												{a.tags[0] && <span className="article-tag">{a.tags[0]}</span>}
+												{/* {a.tags[0] && <span className="article-tag">{a.tags[0]}</span>} */}
 												<img
-													src={a.image || FALLBACK_IMG}
+													src={a.image}
 													alt={a.title}
 													loading="lazy"
 													onError={e => { e.currentTarget.src = FALLBACK_IMG; }}

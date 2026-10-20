@@ -1,5 +1,4 @@
 import React from "react";
-import Carousel from "../../../components/Carousel/Carousel";
 
 // Import destination images
 import tr1 from "../../../assets/img/destination/tr-1.jpg";
@@ -123,74 +122,7 @@ const SimilarFlights = () => {
         {/* Flights Carousel */}
         <div className="row justify-content-center">
           <div className="col-xl-12 col-lg-12 col-md-12 p-0">
-            <Carousel
-              items={flightsData}
-              itemsPerSlide={3}
-              tabletItemsPerSlide={2}
-              mobileItemsPerSlide={1}
-              renderSlide={(slideFlights, slideIndex, { isDragging }) => (
-                <div
-                  className="row justify-content-center g-3"
-                  style={{ width: "100%", margin: 0, flex: "0 0 100%" }}
-                >
-                  {slideFlights.map((flight) => (
-                    <div
-                      className="col-xl-4 col-lg-4 col-md-6 col-sm-12"
-                      key={flight.id}
-                      style={{ pointerEvents: isDragging ? "none" : "auto", width:"430px" }}
-                    >
-                      <div className="pop-touritem mb-4">
-                        <div
-                          className="card rounded-3 border m-0"
-                          onClick={() => handleFlightClick(flight)}
-                          style={{ cursor: 'pointer' }}
-                        >
-                          {/* Flight Image */}
-                          <div className="flight-thumb-wrapper">
-                            <div className="popFlights-item-overHidden">
-                              <img
-                                src={flight.image}
-                                className="img-fluid"
-                                alt={`${flight.origin} to ${flight.destination}`}
-                              />
-                            </div>
-                          </div>
-
-                          {/* Flight Details */}
-                          <div className="touritem-middle position-relative p-3">
-                            <div className="touritem-flexxer">
-                              {/* Origin and Destination */}
-                              <h4 className="city fs-6 m-0 fw-bold">
-                                <span>{flight.origin}</span>
-                                <span className="svg-icon svg-icon-muted svg-icon-2hx px-1">
-                                  <ArrowIcon />
-                                </span>
-                                <span>{flight.destination}</span>
-                              </h4>
-
-                              {/* Trip Details */}
-                              <p className="detail ellipsis-container">
-                                <span className="ellipsis-item__normal">{flight.tripType}</span>
-                                <span className="separate ellipsis-item__normal"></span>
-                                <span className="ellipsis-item">{flight.duration}</span>
-                              </p>
-                            </div>
-
-                            {/* Price */}
-                            <div className="flight-foots">
-                              <h5 className="fs-5 low-price m-0">
-                                <span className="tag-span">From</span>{' '}
-                                <span className="price">{flight.price}</span>
-                              </h5>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            />
+            
           </div>
         </div>
       </div>

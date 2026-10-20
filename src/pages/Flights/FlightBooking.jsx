@@ -486,17 +486,15 @@ const FlightBooking = ({ admin = false }) => {
 							flightDetails: offer.raw,
 							travelers: passengers,
 						});
+						const booking = await bookFlight(payload);
+						const flightOrderReference = booking?.id || booking?.data?.data?.id || '';
 						await bookFlight(payload);
 
 						openModal({
 							variant: 'success',
 							title: 'Booking confirmed!',
-							message: `Your flight has been booked. Reference: ${reference}`,
-							actionLabel: 'Go to dashboard',
-							onAction: () => {
-								closeModal();
-								navigate(admin ? '/admin/dashboard' : '/');
-							},
+							message: `Your flight has been booked. And your reference number is: ${flightOrderReference}`,
+							// no actionLabel / onAction → only a single "OK" button
 						});
 					} catch (err) {
 						console.error('Post-payment error:', err);
